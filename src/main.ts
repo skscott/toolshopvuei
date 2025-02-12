@@ -13,11 +13,16 @@ import '@/assets/styles.scss';
 import '@/assets/tailwind.css';
 import { definePreset } from '@primevue/themes';
 
+import { useUIStore } from '@/stores/ui';
 const app = createApp(App);
+
 // Create Pinia instance
 const pinia = createPinia();
 app.use(pinia);
 app.use(router);
+
+const uiStore = useUIStore();
+uiStore.fetchComponentVisibility(); // Fetch UI settings on startup
 
 const MyPreset = definePreset(Aura, {
     semantic: {

@@ -3,7 +3,9 @@ import AuthLayout from '@/layout/AuthLayout.vue';
 import LandingLayout from '@/layout/LandingLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
-const routes = [
+import type { RouteRecordRaw } from 'vue-router';
+
+const routes: RouteRecordRaw[] = [
     {
         path: '/',
         component: AppLayout,
