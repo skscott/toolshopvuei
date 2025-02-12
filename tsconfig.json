@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2015", "DOM"],
+    "module": "esnext",  // ✅ Change to 'esnext' or 'es2020'
+    "allowJs": true,               // Allows .js files in TypeScript
+    "checkJs": false,               // Disables JS type checking
+    "strict": false,                // Avoids strict typing errors
+    "moduleResolution": "node",     // Ensures module imports work
+    "esModuleInterop": true,        // Helps with common JS/TS imports
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]              // Ensures @ alias works
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.js"], // Includes both .js and .ts files
+  "exclude": ["node_modules"]
+}
