@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import AppMenuItem from './AppMenuItem.vue';
+import { useUIStore } from '@/stores/ui';
 
 const model = ref([
     {
@@ -453,13 +454,43 @@ const model = ref([
         ]
     }
 ]);
+
+const uiStore = useUIStore();
+
+// Recursive function to filter menu based on visibility
+const filterMenu = (menu) => {
+    return menu
+        .map(item => {
+            const isParentVisible = uiStore.components.hasOwnProperty(item.label)
+                ? uiStore.components[item.label]
+                : false; // Default to false if not found
+
+            if (!isParentVisible) return null; // If parent is hidden, remove it
+
+            if (item.items) {
+                // Keep all children if the parent is visible
+                return { ...item, items: [...item.items] };
+            }
+            return item;
+        })
+        .filter(Boolean); // Remove null values
+};
+
+// Computed property for filtered menu
+const filteredModel = computed(() => {
+    return filterMenu([...model.value]); // Clone array to avoid mutation issues
+});
+
+// Fetch component visibility on mount
+onMounted(() => {
+    uiStore.fetchComponentVisibility();
+});
 </script>
 
 <template>
     <ul class="layout-menu">
-        <template v-for="(item, i) in model" :key="item">
+        <template v-for="(item, i) in filteredModel" :key="item.label">
             <AppMenuItem v-if="!item.separator" :item="item" root :index="i" />
-
             <li v-else class="menu-separator" />
         </template>
     </ul>

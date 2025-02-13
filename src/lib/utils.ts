@@ -251,3 +251,42 @@ export const generateRandomMultiData = (startDate, endDate, intervalHours, minVa
     }
     return data;
 };
+
+export function get_headers() {
+    let token = localStorage.getItem('token');
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token ' + token,
+    };
+    return headers;
+}
+
+import { AxiosError } from 'axios';
+export function handleError(
+    error: AxiosError<any>,
+    store: { errorMessage: string }
+) {
+    let errorMessage = '';
+
+    if (error.response?.data?.Tariffs) {
+        // Check if Tariffs contains objects, and convert them to strings
+        errorMessage = error.response.data.Tariffs
+            .map((errorObj: any) => errorObj.message || JSON.stringify(errorObj)) // Assuming `message` is the string
+            .join('\n');
+    } else if (error.response?.data?.non_field_errors) {
+        // Same for non_field_errors
+        errorMessage = error.response.data.non_field_errors
+            .map((errorObj: any) => errorObj.message || JSON.stringify(errorObj))
+            .join('\n');
+    } else {
+        errorMessage = error.message;
+    }
+
+    console.error('Error:', errorMessage);
+    
+    // Update the store's error message
+    store.errorMessage = errorMessage;
+
+    // Rethrow the error so it can still be caught in the updateContract catch block
+    throw error;
+}

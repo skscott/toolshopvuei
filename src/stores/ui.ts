@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { handleError } from '@/lib/utils';
 
 const baseApiUrl = import.meta.env.VITE_DRF_API_URL;
 // const url = `${baseApiUrl}/api/ui-components/`;
- const url = `http://127.0.0.1:8050/api/ui-components/`;
+ const url = `http://127.0.0.1:8050/ui-components/`;
 
 export const useUIStore = defineStore('ui', {
   state: () => ({
@@ -24,7 +25,11 @@ export const useUIStore = defineStore('ui', {
         
         this.components = visibilityData;
       } catch (error) {
-        console.error("Error fetching component visibility:", error);
+        if (error instanceof AxiosError) {
+            handleError(error, this); // Pass 'this' to the handleError function to update errorMessage
+        }
+      } finally {
+          this.loading = false;
       }
     }
   }
