@@ -6,6 +6,7 @@ import { useUIStore } from '@/stores/ui';
 const model = ref([
     {
         label: 'Dashboards',
+        collapsed: false, // Add this line
         icon: 'pi pi-home',
         items: [
             {
@@ -92,6 +93,7 @@ const model = ref([
     { separator: true },
     {
         label: 'UI Kit',
+        collapsed: false, // Add this line
         icon: 'pi pi-fw pi-star-fill',
         items: [
             {
@@ -174,6 +176,7 @@ const model = ref([
     { separator: true },
     {
         label: 'Prime Blocks',
+        collapsed: false, // Add this line
         icon: 'pi pi-fw pi-prime',
         items: [
             {
@@ -205,6 +208,7 @@ const model = ref([
     { separator: true },
     {
         label: 'Pages',
+        collapsed: false, // Add this line
         icon: 'pi pi-fw pi-briefcase',
         items: [
             {
@@ -309,6 +313,7 @@ const model = ref([
     { separator: true },
     {
         label: 'E-Commerce',
+        collapsed: false, // Add this line
         icon: 'pi pi-fw pi-wallet',
         items: [
             {
@@ -351,6 +356,7 @@ const model = ref([
     { separator: true },
     {
         label: 'User Management',
+        collapsed: false, // Add this line
         icon: 'pi pi-fw pi-user',
         items: [
             {
@@ -439,6 +445,7 @@ const model = ref([
     { separator: true },
     {
         label: 'Start',
+        collapsed: false, // Add this line
         icon: 'pi pi-fw pi-download',
         items: [
             {
@@ -455,33 +462,36 @@ const model = ref([
     }
 ]);
 
+
 const uiStore = useUIStore();
 
-// Recursive function to filter menu based on visibility
+const toggleCollapse = (item) => {
+    if (item.items) {
+        item.collapsed = !item.collapsed;
+    }
+};
+
 const filterMenu = (menu) => {
     return menu
         .map(item => {
             const isParentVisible = uiStore.components.hasOwnProperty(item.label)
                 ? uiStore.components[item.label]
-                : false; // Default to false if not found
+                : false;
 
-            if (!isParentVisible) return null; // If parent is hidden, remove it
+            if (!isParentVisible) return null;
 
             if (item.items) {
-                // Keep all children if the parent is visible
                 return { ...item, items: [...item.items] };
             }
             return item;
         })
-        .filter(Boolean); // Remove null values
+        .filter(Boolean);
 };
 
-// Computed property for filtered menu
 const filteredModel = computed(() => {
-    return filterMenu([...model.value]); // Clone array to avoid mutation issues
+    return filterMenu([...model.value]);
 });
 
-// Fetch component visibility on mount
 onMounted(() => {
     uiStore.fetchComponentVisibility();
 });
@@ -490,8 +500,23 @@ onMounted(() => {
 <template>
     <ul class="layout-menu">
         <template v-for="(item, i) in filteredModel" :key="item.label">
-            <AppMenuItem v-if="!item.separator" :item="item" root :index="i" />
+            <AppMenuItem
+                v-if="!item.separator"
+                :item="item"
+                :index="i"
+                :toggleCollapse="toggleCollapse"
+            />
             <li v-else class="menu-separator" />
         </template>
     </ul>
 </template>
+
+<style>
+.layout-menu li {
+    cursor: pointer;
+}
+
+.layout-menu li ul {
+    padding-left: 20px;
+}
+</style>
