@@ -4,6 +4,7 @@ import AppMenuItem from './AppMenuItem.vue';
 import { useUIStore } from '@/stores/ui';
 
 const model = ref([
+    
     {
         label: 'Dashboards',
         collapsed: false, // Add this line
@@ -23,7 +24,8 @@ const model = ref([
                 label: 'Marketing',
                 icon: 'pi pi-fw pi-gauge',
                 to: '/dashboard-marketing'
-            }
+            },
+            {separator: true},
         ]
     },
     { separator: true },
@@ -459,7 +461,46 @@ const model = ref([
                 to: '/documentation'
             }
         ]
-    }
+    },
+    {
+        label: 'Toolshop',
+        icon: 'pi pi-fw pi-info-circle',
+        to: '/toolshop',
+        items: [
+        {
+                label: 'Configuration',
+                to: '/pages/config',
+                items: [
+                {
+                        label: 'UI Components',
+                        to: '/pages/ui-components'
+                    },
+                    {
+                        label: 'Settings',
+                        to: '/pages/settings'
+                    },
+                ]
+            },
+            {
+                label: 'Customers',
+                to: '/pages/customers'
+            },
+            {
+                label: 'Inventory',
+                to: '/pages/inventory'
+            },
+            {
+                label: 'Invoices',
+                to: '/pages/invoices'
+            },
+            {
+                label: 'Jobs',
+                to: '/pages/jobs'
+            },
+        ]
+    },
+    { separator: true },
+
 ]);
 
 
@@ -489,6 +530,7 @@ const filterMenu = (menu) => {
 };
 
 const filteredModel = computed(() => {
+    console.log('filteredModel', filteredModel);
     return filterMenu([...model.value]);
 });
 
