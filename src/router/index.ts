@@ -1,4 +1,7 @@
 import AppLayout from '@/layout/AppLayout.vue';
+import ToolshopLayout from '@/layout/ToolshopLayout.vue';
+import ToolshopHome from "@/views/pages/toolshop/ToolshopHome.vue";
+
 import AuthLayout from '@/layout/AuthLayout.vue';
 import LandingLayout from '@/layout/LandingLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -7,6 +10,20 @@ import type { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
     {
+        path: "/toolshop",
+        component: ToolshopLayout,
+        children: [
+            { path: "", component: ToolshopHome },
+            { path: "configuration", component: () => import("@/views/pages/toolshop/UIConfiguration.vue") },
+            { path: "configuration/ui-components", component: () => import("@/views/pages/toolshop/UIComponents.vue") },
+            { path: "configuration/ui-configuration", component: () => import("@/views/pages/toolshop/UIConfiguration.vue") },
+            { path: "configuration/settings", component: () => import("@/views/pages/toolshop/Settings.vue") },
+            { path: "customers", component: () => import("@/views/pages/toolshop/Customers.vue") },
+            { path: "inventory", component: () => import("@/views/pages/toolshop/Inventory.vue") },
+            { path: "invoices", component: () => import("@/views/pages/toolshop/Invoices.vue") },
+            { path: "jobs", component: () => import("@/views/pages/toolshop/Jobs.vue") },
+        ],
+    },    {
         path: '/',
         component: AppLayout,
         children: [

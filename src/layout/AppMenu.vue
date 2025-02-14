@@ -463,54 +463,57 @@ const model = ref([
         ]
     },
     {
-        label: 'Toolshop',
-        icon: 'pi pi-fw pi-info-circle',
-        to: '/toolshop',
-        items: [
+    label: 'Toolshop',
+    icon: 'pi pi-fw pi-info-circle',
+    to: '/toolshop',
+    items: [
         {
-                label: 'Configuration',
-                to: '/pages/config',
-                items: [
+            label: 'Configuration',
+            to: '/toolshop/configuration', // Match Vue Router path
+            items: [
                 {
-                        label: 'UI Components',
-                        to: '/pages/ui-components'
-                    },
-                    {
-                        label: 'Settings',
-                        to: '/pages/settings'
-                    },
-                ]
-            },
-            {
-                label: 'Customers',
-                to: '/pages/customers'
-            },
-            {
-                label: 'Inventory',
-                to: '/pages/inventory'
-            },
-            {
-                label: 'Invoices',
-                to: '/pages/invoices'
-            },
-            {
-                label: 'Jobs',
-                to: '/pages/jobs'
-            },
-        ]
+                    label: 'UI Components',
+                    to: '/toolshop/configuration/ui-components' // Match Router
+                },
+                {
+                    label: 'Settings',
+                    to: '/toolshop/configuration/settings' // Match Router
+                },
+                {
+                    label: 'Configuration',
+                    to: '/toolshop/configuration/ui-configuration' // Match Router
+                },
+            ]
+        },
+        {
+            label: 'Customers',
+            to: '/toolshop/customers' // Adjusted path
+        },
+        {
+            label: 'Inventory',
+            to: '/toolshop/inventory' // Adjusted path
+        },
+        {
+            label: 'Invoices',
+            to: '/toolshop/invoices' // Adjusted path
+        },
+        {
+            label: 'Jobs',
+            to: '/toolshop/jobs' // Adjusted path
+        },
+    ]
     },
     { separator: true },
 
 ]);
 
-
 const uiStore = useUIStore();
 
-const toggleCollapse = (item) => {
+function toggleCollapse(item) {
     if (item.items) {
         item.collapsed = !item.collapsed;
     }
-};
+}
 
 const filterMenu = (menu) => {
     return menu
@@ -526,6 +529,7 @@ const filterMenu = (menu) => {
             }
             return item;
         })
+
         .filter(Boolean);
 };
 
