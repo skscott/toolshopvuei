@@ -4,7 +4,48 @@ import AppMenuItem from './AppMenuItem.vue';
 import { useUIStore } from '@/stores/ui';
 
 const model = ref([
-    
+{
+    label: 'Toolshop',
+    icon: 'pi pi-fw pi-info-circle',
+    to: '/toolshop',
+    items: [
+        {
+            label: 'Configuration',
+            to: '/toolshop/configuration', // Match Vue Router path
+            items: [
+                {
+                    label: 'UI Components',
+                    to: '/toolshop/configuration/ui-components' // Match Router
+                },
+                {
+                    label: 'Settings',
+                    to: '/toolshop/configuration/settings' // Match Router
+                },
+                {
+                    label: 'Configuration',
+                    to: '/toolshop/configuration/ui-configuration' // Match Router
+                },
+            ]
+        },
+        {
+            label: 'Customers',
+            to: '/toolshop/customers' // Adjusted path
+        },
+        {
+            label: 'Inventory',
+            to: '/toolshop/inventory' // Adjusted path
+        },
+        {
+            label: 'Invoices',
+            to: '/toolshop/invoices' // Adjusted path
+        },
+        {
+            label: 'Jobs',
+            to: '/toolshop/jobs' // Adjusted path
+        },
+    ]
+    },
+    { separator: true },
     {
         label: 'Dashboards',
         collapsed: false, // Add this line
@@ -462,48 +503,6 @@ const model = ref([
             }
         ]
     },
-    {
-    label: 'Toolshop',
-    icon: 'pi pi-fw pi-info-circle',
-    to: '/toolshop',
-    items: [
-        {
-            label: 'Configuration',
-            to: '/toolshop/configuration', // Match Vue Router path
-            items: [
-                {
-                    label: 'UI Components',
-                    to: '/toolshop/configuration/ui-components' // Match Router
-                },
-                {
-                    label: 'Settings',
-                    to: '/toolshop/configuration/settings' // Match Router
-                },
-                {
-                    label: 'Configuration',
-                    to: '/toolshop/configuration/ui-configuration' // Match Router
-                },
-            ]
-        },
-        {
-            label: 'Customers',
-            to: '/toolshop/customers' // Adjusted path
-        },
-        {
-            label: 'Inventory',
-            to: '/toolshop/inventory' // Adjusted path
-        },
-        {
-            label: 'Invoices',
-            to: '/toolshop/invoices' // Adjusted path
-        },
-        {
-            label: 'Jobs',
-            to: '/toolshop/jobs' // Adjusted path
-        },
-    ]
-    },
-    { separator: true },
 
 ]);
 

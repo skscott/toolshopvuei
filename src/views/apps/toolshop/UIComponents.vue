@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 import { ref, onMounted, computed, Text } from 'vue';
-import { ProductService } from '@/service/ProductService';
 import { useUIStore } from '@/stores/ui';
 import { FilterMatchMode } from '@primevue/core/api';
 import { Checkbox, InputText } from 'primevue';
@@ -91,11 +90,20 @@ function closeDialog(type: 'editDialog' | 'deleteDialog') {
 
     <Dialog v-model:visible="dialogState.editDialog" :style="{ width: '450px' }" header="Component Details" :modal="true">
         <div class="flex flex-col gap-6">
-            <div>
-                <label for="name" class="block font-bold mb-3">Name</label>
-                <InputText id="name" v-model="component.name" required="true" rows="3" cols="20" fluid />
-                <label for="isVisible" class="block font-bold mb-3">Visisble</label>
-                <Checkbox id="isVisible" v-model="component.isVisible" rows="3" cols="20" fluid />
+             <div class="card flex flex-col gap-4">
+                <div class="font-semibold text-xl">Horizontal</div>
+                <div class="grid grid-cols-12 gap-2">
+                    <label for="name3" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Name</label>
+                    <div class="col-span-12 md:col-span-10">
+                        <InputText id="name" v-model="component.name" required="true" rows="3" cols="20" fluid />
+                    </div>
+                </div>
+                <div class="grid grid-cols-12 gap-2">
+                    <label for="email3" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Visisble</label>
+                    <div class="col-span-12 md:col-span-10">
+                        <Checkbox id="isVisible" v-model="component.isVisible" rows="3" cols="20" fluid />
+                    </div>
+                </div>
             </div>
         </div>
     </Dialog>
