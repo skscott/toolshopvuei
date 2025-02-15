@@ -6,9 +6,16 @@ const baseApiUrl = import.meta.env.VITE_DRF_API_URL;
 // const url = `${baseApiUrl}/api/ui-components/`;
  const url = `http://127.0.0.1:8050/ui-components/`;
 
+ interface UIComponent {
+  id: number;
+  name: string;
+  is_visible: boolean;
+}
+
 export const useUIStore = defineStore('ui', {
   state: () => ({
-    components: {} as Record<string, boolean>
+    components: {} as Record<string, boolean>,
+    ui_components: [] as UIComponent[],
   }),
 
   actions: {
@@ -30,6 +37,20 @@ export const useUIStore = defineStore('ui', {
         }
       } finally {
           this.loading = false;
+      }
+    },
+    async fetchUIComponents() {
+      this.loading = true;
+      this.error = null;
+
+      try {
+        const response = await axios.get<UIComponent[]>(url); // Replace with your API endpoint
+        this.ui_components = response.data; // Assign the response data to the state
+      } catch (error) {
+        this.error = 'Failed to fetch UI components';
+        console.error(error);
+      } finally {
+        this.loading = false;
       }
     }
   }

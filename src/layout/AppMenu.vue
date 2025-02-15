@@ -534,7 +534,7 @@ const filterMenu = (menu) => {
 };
 
 const filteredModel = computed(() => {
-    console.log('filteredModel', filteredModel);
+    // console.log('filteredModel', filteredModel);
     return filterMenu([...model.value]);
 });
 
