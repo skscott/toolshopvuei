@@ -56,10 +56,10 @@ export const useUIStore = defineStore('ui', {
     },
     async updateComponent() {
       const id = this.component.id ?? 0;
-      console.log("Update component: ", this.component);
+      console.log("Update omponent: ", this.component);
   
       this.loading = true;
-      const headers = get_headers_mock();
+      const headers = get_headers();
       try {
           if (id === 0) {
               await axios.post(url, this.component, { headers }).then(request => request.data);
@@ -77,6 +77,20 @@ export const useUIStore = defineStore('ui', {
       } finally {
           this.loading = false;
       }
+    },
+    async deleteComponent(id: number){
+      try {
+          const headers = get_headers_mock();
+          const response = await axios.delete(url + id + "/", { headers}).then(request => request.data);
+          this.tariff = response.data;
+      }
+      catch (error) {
+        if (error instanceof AxiosError) {
+            handleError(error, this); // Pass 'this' to the handleError function to update errorMessage
+        }
+    } finally {
+        this.loading = false;
     }
+  },
   }
 });

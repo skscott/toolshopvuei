@@ -27,9 +27,10 @@ onMounted(() => {
 const dialogState = ref({
     editDialog: false,
     deleteDialog: false,
+    deletesDialog: false,
 });
 
-function openNew(type: 'editDialog' | 'deleteDialog') {
+function openNew(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
     dialogState.value[type] = true;
     store.component = {
         id: 0,
@@ -61,10 +62,11 @@ function saveComponent() {
     if (store.component?.name?.trim()) {
         if (store.component.id) {
             store.ui_components[findIndexById(store.component.id)] = store.component;
+            toast.add({severity:'success', summary: 'Successful', detail: 'Component Updated', life: 3000});
         }
         else {
             store.ui_components.push(store.component);
-            toast.add({severity:'success', summary: 'Successful', detail: 'Product Created', life: 3000});
+            toast.add({severity:'success', summary: 'Successful', detail: 'Component Created', life: 3000});
         }
         store.updateComponent();
         closeDialog('editDialog');
@@ -73,16 +75,35 @@ function saveComponent() {
 };
 
 function deleteComponent(component: any) {
-    store.ui_components = store.ui_components.filter(val => val.id !== component.value.id);
+    store.component = component;
+    openDialog('deleteDialog');
+};
+
+function confirmDeleteComponent() {
+    console.log("Component to delete:", JSON.stringify(store.component));
+    store.ui_components = store.ui_components.filter(val => val.id !== store.component.id);
+    store.deleteComponent(store.component.id);
     toast.add({severity:'success', summary: 'Successful', detail: 'Product Deleted', life: 3000});
     closeDialog('deleteDialog');    
 };
 
-function openDialog(type: 'editDialog' | 'deleteDialog') {
+function confirmDeleteSelected() {
+    openDialog('deletesDialog');
+};
+
+function deleteSelectedComponents() {
+    console.log("Selected Components:", selectedComponents);
+    store.ui_components = store.ui_components.filter(val => !selectedComponents.value.includes(val));
+    closeDialog('deletesDialog');
+    selectedComponents.value = null;
+    toast.add({severity:'success', summary: 'Successful', detail: 'Components Deleted', life: 3000});
+};
+
+function openDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
     dialogState.value[type] = true;
 }
 
-function closeDialog(type: 'editDialog' | 'deleteDialog') {
+function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
     dialogState.value[type] = false;
 }
 
@@ -93,7 +114,7 @@ function closeDialog(type: 'editDialog' | 'deleteDialog') {
         <Toolbar class="mb-6">
             <template #start>
                 <Button label="New" icon="pi pi-plus" class="mr-2" @click="openNew('editDialog')" />
-                <!-- <Button label="Delete" icon="pi pi-trash" severity="danger" outlined @click="confirmDeleteSelected" :disabled="!selectedProducts || !selectedProducts.length" /> -->
+                <Button label="Delete" icon="pi pi-trash" severity="danger" outlined @click="confirmDeleteSelected" :disabled="!selectedComponents || !selectedComponents.length" />
             </template>
 
             <template #end>
@@ -163,7 +184,7 @@ function closeDialog(type: 'editDialog' | 'deleteDialog') {
                 <div class="grid grid-cols-12 gap-2">
                     <label for="isVisible" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Visible</label>
                     <div class="col-span-12 md:col-span-10">
-                        <Checkbox id="isVisible" v-model="store.component.is_visible" binary rows="3" cols="20" fluid />
+                        <Checkbox id="is_visisble" v-model="store.component.is_visible" binary rows="3" cols="20" fluid />
                     </div>
                 </div>
             </div>
@@ -174,5 +195,31 @@ function closeDialog(type: 'editDialog' | 'deleteDialog') {
             <Button label="Save" icon="pi pi-check" @click="saveComponent" />
         </template>
     </Dialog>
+
+    <Dialog v-model:visible="dialogState.deleteDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex items-center gap-4">
+            <i class="pi pi-exclamation-triangle !text-3xl" />
+            <span v-if="store.component"
+                >Are you sure you want to delete <b>{{ store.component.name }}</b
+                >?</span
+            >
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" text @click="closeDialog('deleteDialog')" />
+            <Button label="Yes" icon="pi pi-check" @click="confirmDeleteComponent" />
+        </template>
+    </Dialog>
+
+    <Dialog v-model:visible="dialogState.deletesDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex items-center gap-4">
+            <i class="pi pi-exclamation-triangle !text-3xl" />
+            <span v-if="store.component">Are you sure you want to delete the selected components?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" text @click="closeDialog('deletesDialog')" />
+            <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedComponents" />
+        </template>
+    </Dialog>
+
 </template>
 
