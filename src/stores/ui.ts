@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import axios, { AxiosError } from 'axios';
-import { handleError } from '@/lib/utils';
+import { get_headers, get_headers_mock, handleError } from '@/lib/utils';
 
 const baseApiUrl = import.meta.env.VITE_DRF_API_URL;
 // const url = `${baseApiUrl}/api/ui-components/`;
@@ -16,6 +16,7 @@ export const useUIStore = defineStore('ui', {
   state: () => ({
     components: {} as Record<string, boolean>,
     ui_components: [] as UIComponent[],
+    component: {} as UIComponent,
   }),
 
   actions: {
@@ -51,6 +52,30 @@ export const useUIStore = defineStore('ui', {
         console.error(error);
       } finally {
         this.loading = false;
+      }
+    },
+    async updateComponent() {
+      const id = this.component.id ?? 0;
+      console.log("Update component: ", this.component);
+  
+      this.loading = true;
+      const headers = get_headers_mock();
+      try {
+          if (id === 0) {
+              await axios.post(url, this.component, { headers }).then(request => request.data);
+              this.successMessage = 'Component created successfully!';
+          } else {
+              await axios.put(url + id + "/", this.component, { headers }).then(request => request.data);
+              await this.fetchUIComponents();
+              this.successMessage = 'Component updated successfully!';
+              console.log("Success: ", this.successMessage);
+          }
+      } catch (error) {
+          if (error instanceof AxiosError) {
+              handleError(error, this); // Pass 'this' to the handleError function to update errorMessage
+          }
+      } finally {
+          this.loading = false;
       }
     }
   }

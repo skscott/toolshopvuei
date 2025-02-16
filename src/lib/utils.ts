@@ -261,6 +261,13 @@ export function get_headers() {
     return headers;
 }
 
+export function get_headers_mock() {
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+    return headers;
+}
+
 import { AxiosError } from 'axios';
 export function handleError(
     error: AxiosError<any>,

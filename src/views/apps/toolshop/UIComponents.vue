@@ -3,18 +3,22 @@
 import { ref, onMounted, computed, Text } from 'vue';
 import { useUIStore } from '@/stores/ui';
 import { FilterMatchMode } from '@primevue/core/api';
-import { Checkbox, InputText } from 'primevue';
-
+import { Checkbox, Column, InputText, useToast } from 'primevue';
+import Toast from 'primevue';
 const store = useUIStore();
 const filters = ref({'global': {value: null, matchMode: FilterMatchMode.CONTAINS}});
-const selectedComponents = null;
-const uiDialog = false;
+const selectedComponents = ref();
 const deleteUIDialog = false;
 const deleteProductsDialog = false;
-let component = ref({
-    name: '',
-    isVisible: false,
-});
+const submitted = ref(false);
+
+let toast = useToast();
+
+// let component = ref({
+//     id: 0,
+//     name: '',
+//     isVisible: false,
+// });
 
 onMounted(() => {
     store.fetchUIComponents();
@@ -27,11 +31,52 @@ const dialogState = ref({
 
 function openNew(type: 'editDialog' | 'deleteDialog') {
     dialogState.value[type] = true;
-    component.value = {
+    store.component = {
+        id: 0,
         name: '',
-        isVisible: false,
+        is_visible: false,
     };
 }
+
+function editComponent(p_component) {
+    console.log("Component edit:", p_component);
+    store.component = {...p_component};
+    openDialog('editDialog');
+};
+
+function findIndexById(id: number) {
+    let index = -1;
+    for (let i = 0; i < store.ui_components.length; i++) {
+        if (store.ui_components[i].id === id) {
+            index = i;
+            break;
+        }
+    }
+    return index;
+};
+
+function saveComponent() {
+    submitted.value = true;
+
+    if (store.component?.name?.trim()) {
+        if (store.component.id) {
+            store.ui_components[findIndexById(store.component.id)] = store.component;
+        }
+        else {
+            store.ui_components.push(store.component);
+            toast.add({severity:'success', summary: 'Successful', detail: 'Product Created', life: 3000});
+        }
+        store.updateComponent();
+        closeDialog('editDialog');
+        store.component = { id: 0, name: '', is_visible: false };
+    }
+};
+
+function deleteComponent(component: any) {
+    store.ui_components = store.ui_components.filter(val => val.id !== component.value.id);
+    toast.add({severity:'success', summary: 'Successful', detail: 'Product Deleted', life: 3000});
+    closeDialog('deleteDialog');    
+};
 
 function openDialog(type: 'editDialog' | 'deleteDialog') {
     dialogState.value[type] = true;
@@ -71,7 +116,7 @@ function closeDialog(type: 'editDialog' | 'deleteDialog') {
             >
             <template #header>
                 <div class="flex flex-wrap gap-2 items-center justify-between">
-                    <h4 class="m-0">Manage Products</h4>
+                    <h4 class="m-0">Manage Components</h4>
                     <IconField>
                         <InputIcon>
                             <i class="pi pi-search" />
@@ -84,7 +129,24 @@ function closeDialog(type: 'editDialog' | 'deleteDialog') {
             <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
             <Column field="id" header="Id"></Column>
             <Column field="name" header="Name"></Column>
-            <Column field="is_visible" header="Quantity"></Column>
+            <Column field="is_visible" header="Visible"></Column>
+            <Column header="Actions">
+            <template #body="slotProps">
+                <!-- Actions Column for Edit and Delete -->
+                <div class="flex gap-2">
+                    <Button 
+                    icon="pi pi-pencil" 
+                    class="p-button-rounded p-button-info p-mr-2"
+                    @click="editComponent(slotProps.data)" 
+                />
+                <Button 
+                    icon="pi pi-trash" 
+                    class="p-button-rounded p-button-danger p-mr-2"
+                    @click="deleteComponent(slotProps.data)" 
+                />
+            </div>
+        </template>
+    </Column>
         </DataTable>
     </div>
 
@@ -95,17 +157,22 @@ function closeDialog(type: 'editDialog' | 'deleteDialog') {
                 <div class="grid grid-cols-12 gap-2">
                     <label for="name3" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Name</label>
                     <div class="col-span-12 md:col-span-10">
-                        <InputText id="name" v-model="component.name" required="true" rows="3" cols="20" fluid />
+                        <InputText id="name" v-model="store.component.name" required="true" rows="3" cols="20" fluid />
                     </div>
                 </div>
                 <div class="grid grid-cols-12 gap-2">
-                    <label for="email3" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Visisble</label>
+                    <label for="isVisible" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Visible</label>
                     <div class="col-span-12 md:col-span-10">
-                        <Checkbox id="isVisible" v-model="component.isVisible" rows="3" cols="20" fluid />
+                        <Checkbox id="isVisible" v-model="store.component.is_visible" binary rows="3" cols="20" fluid />
                     </div>
                 </div>
             </div>
         </div>
+        
+        <template #footer>
+            <Button label="Cancel" icon="pi pi-times" text @click="closeDialog('editDialog')" />
+            <Button label="Save" icon="pi pi-check" @click="saveComponent" />
+        </template>
     </Dialog>
 </template>
 
