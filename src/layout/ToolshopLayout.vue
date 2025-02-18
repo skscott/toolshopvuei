@@ -6,7 +6,7 @@ import AppConfig from './AppConfig.vue';
 import AppFooter from './AppFooter.vue';
 import AppRightMenu from './AppRightMenu.vue';
 import AppSearch from './AppSearch.vue';
-import AppSidebar from './AppSidebar.vue';
+import ToolshopSidebar from './ToolshopSideBar.vue';
 import AppTopbar from './AppTopbar.vue';
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
@@ -80,7 +80,7 @@ function isOutsideClicked(event) {
 
 <template>
     <div class="layout-wrapper" :class="containerClass">
-        <AppSidebar ref="sidebarRef" />
+        <ToolshopSidebar ref="sidebarRef" />
         <div class="layout-content-wrapper">
             <div class="layout-content-wrapper-inside">
                 <AppTopbar />

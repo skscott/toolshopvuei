@@ -36,6 +36,7 @@ declare module 'vue' {
     CTAWidget: typeof import('./src/components/landing/CTAWidget.vue')['default']
     CurrencyCardWidget: typeof import('./src/components/dashboard/banking/CurrencyCardWidget.vue')['default']
     CustomersLogoWidget: typeof import('./src/components/landing/CustomersLogoWidget.vue')['default']
+    CustomersTable: typeof import('./src/components/toolshop/tables/CustomersTable.vue')['default']
     CustomMeter: typeof import('./src/components/dashboard/charts/CustomMeter.vue')['default']
     DataTable: typeof import('primevue/datatable')['default']
     DataView: typeof import('primevue/dataview')['default']

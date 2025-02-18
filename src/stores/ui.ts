@@ -59,7 +59,7 @@ export const useUIStore = defineStore('ui', {
       console.log("Update omponent: ", this.component);
   
       this.loading = true;
-      const headers = get_headers();
+      const headers = get_headers_mock();
       try {
           if (id === 0) {
               await axios.post(url, this.component, { headers }).then(request => request.data);
@@ -67,6 +67,7 @@ export const useUIStore = defineStore('ui', {
           } else {
               await axios.put(url + id + "/", this.component, { headers }).then(request => request.data);
               await this.fetchUIComponents();
+              await this.fetchComponentVisibility();
               this.successMessage = 'Component updated successfully!';
               console.log("Success: ", this.successMessage);
           }
