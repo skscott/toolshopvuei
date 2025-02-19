@@ -1,7 +1,9 @@
 // Customers.vue
 <template>
     <Detail />
-    <InvoicesTable :customerId="customerId" />
+    <div class="pt-6">
+        <InvoicesTable :customerId="customerId" />
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -17,7 +19,6 @@ const store = useCustomerStore();
 
 // Extract customerId from the route params
 const customerId = computed(() => Number(route.params.customerId));
-alert("Customer " + customerId.value);
 
 onMounted(() => {
     if (customerId.value) {
