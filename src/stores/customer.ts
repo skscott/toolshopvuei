@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { Customer } from '@/types';
 
-const url = `http://127.0.0.1:8050/api/customers/`;
+const url = `http://127.0.0.1:8050/customers/`;
 
 export const useCustomerStore = defineStore('customer', () => {
     // State

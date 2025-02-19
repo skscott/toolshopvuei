@@ -11,6 +11,7 @@ import { Invoice } from '@/types';
 const store = useInvoiceStore();
 const props = defineProps<{ customerId: number }>();
 const customerId = computed(() => props.customerId);
+alert("Invoices Customer ID: " + customerId.value);
 
 onMounted(() => {
     store.fetchInvoices();

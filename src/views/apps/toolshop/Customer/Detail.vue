@@ -1,6 +1,8 @@
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { useCustomerStore } from '@/stores/customer';
 
-    <script setup>
-import { ref } from 'vue';
+const store = useCustomerStore();
 
 const dropdownItems = ref([
     { name: 'Option 1', code: 'Option 1' },
@@ -9,6 +11,17 @@ const dropdownItems = ref([
 ]);
 
 const dropdownItem = ref(null);
+const props = defineProps<{ customerId: number }>();
+const customerId = computed(() => props.customerId);
+
+alert("Detail Customer ID: " + customerId.value);
+
+onMounted(() => {
+    console.log("Customer Detail:", customerId.value);
+    store.fetchCustomer(customerId.value);
+    console.log("Customers Table:", store.customers);
+
+});
 </script>
 
 <template>
@@ -17,8 +30,8 @@ const dropdownItem = ref(null);
             <div class="font-semibold text-xl">Customer Detail</div>
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex flex-wrap gap-2 w-full">
-                    <label for="firstname2">Firstname</label>
-                    <InputText id="firstname2" type="text" />
+                    <label for="name">Firstname</label>
+                    <InputText id="name" type="text"  v-model="store.customer.name" />
                 </div>
                 <div class="flex flex-wrap gap-2 w-full">
                     <label for="lastname2">Lastname</label>
