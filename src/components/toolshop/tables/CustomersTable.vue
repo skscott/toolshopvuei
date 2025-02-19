@@ -6,7 +6,10 @@ import { FilterMatchMode } from '@primevue/core/api';
 import { Checkbox, Column, InputText, useToast } from 'primevue';
 import Toast from 'primevue';
 import { useCustomerStore } from '@/stores/customer';
+import { useRouter } from 'vue-router';
 import { Customer } from '@/types';
+
+const router = useRouter();
 
 const store = useCustomerStore();
 
@@ -38,6 +41,10 @@ function editCustomer(customer) {
     console.log("Customer edit:", customer);
     store.customer = {...customer};
     openDialog('editDialog');
+};
+
+function detailCustomer(customer) {
+    router.push({ path: `/toolshop/customers/${customer.id}` });
 };
 
 function findIndexById(id: number) {
@@ -152,16 +159,21 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
                 <!-- Actions Column for Edit and Delete -->
                 <div class="flex gap-2">
                     <Button 
+                    icon="pi pi-eye" 
+                    class="p-button-rounded p-button-success p-mr-2 "
+                    @click="detailCustomer(slotProps.data)" 
+                    />
+                    <Button 
                     icon="pi pi-pencil" 
                     class="p-button-rounded p-button-info p-mr-2"
                     @click="editCustomer(slotProps.data)" 
-                />
-                <Button 
+                    />
+                    <Button 
                     icon="pi pi-trash" 
                     class="p-button-rounded p-button-danger p-mr-2"
                     @click="deleteCustomer(slotProps.data)" 
-                />
-            </div>
+                    />
+                </div>
         </template>
     </Column>
         </DataTable>

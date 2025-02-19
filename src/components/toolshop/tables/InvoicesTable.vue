@@ -9,6 +9,8 @@ import { useInvoiceStore } from '@/stores/invoice';
 import { Invoice } from '@/types';
 
 const store = useInvoiceStore();
+const props = defineProps<{ customerId: number }>();
+const customerId = computed(() => props.customerId);
 
 onMounted(() => {
     store.fetchInvoices();

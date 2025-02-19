@@ -23,7 +23,7 @@ export const useUIStore = defineStore('ui', {
     async fetchComponentVisibility() {
       try {
         const response = await axios.get(url);
-        // console.log("Fetched component visibility:", response.data);
+        console.log("Fetched component visibility:", response.data);
         const visibilityData = response.data.reduce((acc: Record<string, boolean>, item) => {
           acc[item.name] = item.is_visible;
           return acc;

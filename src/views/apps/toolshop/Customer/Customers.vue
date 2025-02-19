@@ -2,7 +2,6 @@
 <template>
     <div class="card">
         <h1>Customers</h1>
-        <p>Welcome to the Customers page!</p>
         <CustomersTable />
     </div>
 </template>
