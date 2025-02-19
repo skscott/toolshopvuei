@@ -1,22 +1,32 @@
-// customerStore.ts
-import { get_headers_mock } from '@/lib/utils';
+import axios from 'axios';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { Customer } from '@/types';
 
 const url = `http://127.0.0.1:8050/api/customers/`;
 
 export const useCustomerStore = defineStore('customer', () => {
+    // State
     const customers = ref<Customer[]>([]);
+    const customer = ref<Customer | null>(null);
     const loading = ref(false);
     const error = ref<string | null>(null);
 
+    // Fetch all customers
     async function fetchCustomers() {
         loading.value = true;
         error.value = null;
-        const headers = get_headers_mock();
         try {
-            const response = await fetch(url);
-            customers.value = await response.json();
+            const { data } = await axios.get(url);
+            
+            // Check if API returns a nested customers URL
+            if (data.customers) {
+                const { data: customersData } = await axios.get(data.customers);
+                customers.value = customersData;
+            } else {
+                throw new Error('Customers endpoint not found in API response');
+            }
+
         } catch (err) {
             error.value = 'Failed to fetch customers';
         } finally {
@@ -24,50 +34,40 @@ export const useCustomerStore = defineStore('customer', () => {
         }
     }
 
-    async function updateCustomer(customerId: string, customerData: Partial<Customer>) {
+    // Fetch single customer
+    async function fetchCustomer(id: number) {
+        loading.value = true;
+        error.value = null;
         try {
-            const response = await fetch(`/api/customers/${customerId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(customerData),
-            });
-            if (!response.ok) throw new Error('Failed to update customer');
-            await fetchCustomers();
+            const { data } = await axios.get(`${url}${id}/`);
+            customer.value = data;
+        } catch (err) {
+            error.value = 'Failed to fetch customer';
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    // Update customer
+    async function updateCustomer() {
+        try {
+            await axios.patch(`${url}${customer.value.id}/`, customer.value);
+            await fetchCustomers(); // Refresh data
         } catch (err) {
             error.value = 'Failed to update customer';
         }
     }
 
-    async function deleteCustomer(customerId: string) {
+    // Delete customer
+    async function deleteCustomer(customerId: number) {
         try {
-            const response = await fetch(`/api/customers/${customerId}`, {
-                method: 'DELETE',
-            });
-            if (!response.ok) throw new Error('Failed to delete customer');
-            await fetchCustomers();
+            await axios.delete(`${url}${customerId}/`);
+            await fetchCustomers(); // Refresh data
         } catch (err) {
             error.value = 'Failed to delete customer';
         }
     }
 
-    return { customers, loading, error, fetchCustomers, updateCustomer, deleteCustomer };
+    // Return state and functions
+    return { customers, customer, loading, error, fetchCustomers, fetchCustomer, updateCustomer, deleteCustomer };
 });
-
-// Define Customer interface
-interface Customer {
-    name: string;
-    vat_number: string;
-    company_type: string;
-    street_address: string;
-    city: string;
-    postal_code: string;
-    country: string;
-    contact_name: string;
-    email: string;
-    phone: string;
-    industry: string;
-    website: string | null;
-    created_at: string;
-    updated_at: string;
-    is_active: boolean;
-}

@@ -22,10 +22,8 @@ export const useUIStore = defineStore('ui', {
   actions: {
     async fetchComponentVisibility() {
       try {
-        console.log("Fetching component visibility...", url);
         const response = await axios.get(url);
-
-        console.log("Fetched component visibility:", response.data);
+        // console.log("Fetched component visibility:", response.data);
         const visibilityData = response.data.reduce((acc: Record<string, boolean>, item) => {
           acc[item.name] = item.is_visible;
           return acc;
@@ -55,9 +53,7 @@ export const useUIStore = defineStore('ui', {
       }
     },
     async updateComponent() {
-      const id = this.component.id ?? 0;
-      console.log("Update omponent: ", this.component);
-  
+      const id = this.component.id ?? 0;      
       this.loading = true;
       const headers = get_headers_mock();
       try {
@@ -69,7 +65,7 @@ export const useUIStore = defineStore('ui', {
               await this.fetchUIComponents();
               await this.fetchComponentVisibility();
               this.successMessage = 'Component updated successfully!';
-              console.log("Success: ", this.successMessage);
+              // console.log("Success: ", this.successMessage);
           }
       } catch (error) {
           if (error instanceof AxiosError) {
