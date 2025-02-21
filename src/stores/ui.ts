@@ -2,9 +2,8 @@ import { defineStore } from 'pinia';
 import axios, { AxiosError } from 'axios';
 import { get_headers, get_headers_mock, handleError } from '@/lib/utils';
 
-const baseApiUrl = import.meta.env.VITE_DRF_API_URL;
-// const url = `${baseApiUrl}/api/ui-components/`;
- const url = `http://127.0.0.1:8050/ui-components/`;
+const baseApiUrl = import.meta.env.VITE_API_URL;
+const url = `http://127.0.0.1:8050/ui-components/`;
 
  interface UIComponent {
   id: number;
@@ -23,7 +22,6 @@ export const useUIStore = defineStore('ui', {
     async fetchComponentVisibility() {
       try {
         const response = await axios.get(url);
-        console.log("Fetched component visibility:", response.data);
         const visibilityData = response.data.reduce((acc: Record<string, boolean>, item) => {
           acc[item.name] = item.is_visible;
           return acc;

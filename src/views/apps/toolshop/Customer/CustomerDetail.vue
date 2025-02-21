@@ -1,6 +1,6 @@
 // Customers.vue
 <template>
-    <Detail :customerId="customerId" />
+    <Detail :customerId=customerId /> 
     <div class="pt-6">
         <InvoicesTable :customerId="customerId" />
     </div>

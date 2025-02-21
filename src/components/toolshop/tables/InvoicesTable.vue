@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { ref, onMounted, computed, Text } from 'vue';
+import { ref, onMounted, computed, watchEffect } from 'vue';
 import { useUIStore } from '@/stores/ui';
 import { FilterMatchMode } from '@primevue/core/api';
 import { Checkbox, Column, InputText, useToast } from 'primevue';
@@ -11,11 +11,13 @@ import { Invoice } from '@/types';
 const store = useInvoiceStore();
 const props = defineProps<{ customerId: number }>();
 const customerId = computed(() => props.customerId);
-alert("Invoices Customer ID: " + customerId.value);
 
-onMounted(() => {
-    store.fetchInvoices();
-    console.log("Invoices Table:", store.invoices);
+// onMounted(() => {
+//     store.fetchInvoices();
+// });
+
+watchEffect(() => {
+    store.fetchFilteredInvoices(customerId.value);
 });
 
 const filters = ref({'global': {value: null, matchMode: FilterMatchMode.CONTAINS}});

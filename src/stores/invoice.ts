@@ -3,7 +3,8 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { Invoice } from '@/types';
 
-const url = `http://127.0.0.1:8050/api/invoices/`;
+const baseApiUrl = `${import.meta.env.VITE_API_URL}`;
+// const url = `http://127.0.0.1:8050/api/invoices/`;
 
 export const useInvoiceStore = defineStore('invoice', () => {
     // State
@@ -12,20 +13,28 @@ export const useInvoiceStore = defineStore('invoice', () => {
     const loading = ref(false);
     const error = ref<string | null>(null);
 
-    // Fetch all invoices
-    async function fetchInvoices() {
+    async function fetchFilteredInvoices(customerId?: number) {
+        loading.value = true;
+        const url = customerId
+            ? `${baseApiUrl}/api/customers/${customerId}/invoices/`
+            : `${baseApiUrl}/api/invoices/`;
+    
+        try {
+            await fetchData(url);
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    // Fetch all invoices or filter by customerId
+    let url = baseApiUrl + `/api/invoices/`;
+    async function fetchData(url: string) {
+
         loading.value = true;
         error.value = null;
         try {
-            const { data } = await axios.get(url);
-            
-            // Check if API returns a nested invoices URL
-            if (data.invoices) {
-                const { data: invoicesData } = await axios.get(data.invoices);
-                invoices.value = invoicesData;
-            } else {
-                throw new Error('Invoices endpoint not found in API response');
-            }
+            const { data: invoicesData } = await axios.get(url);
+            invoices.value = invoicesData[0].invoices;
 
         } catch (err) {
             error.value = 'Failed to fetch invoices';
@@ -52,7 +61,7 @@ export const useInvoiceStore = defineStore('invoice', () => {
     async function updateInvoice() {
         try {
             await axios.patch(`${url}${invoice.value.id}/`, invoice.value);
-            await fetchInvoices(); // Refresh data
+            await fetchFilteredInvoices(); // Refresh data
         } catch (err) {
             error.value = 'Failed to update invoice';
         }
@@ -62,12 +71,12 @@ export const useInvoiceStore = defineStore('invoice', () => {
     async function deleteInvoice(invoiceId: number) {
         try {
             await axios.delete(`${url}${invoiceId}/`);
-            await fetchInvoices(); // Refresh data
+            await fetchFilteredInvoices(); // Refresh data
         } catch (err) {
             error.value = 'Failed to delete invoice';
         }
     }
 
     // Return state and functions
-    return { invoices, invoice, loading, error, fetchInvoices, fetchInvoice, updateInvoice, deleteInvoice };
+    return { invoices, invoice, loading, error, fetchFilteredInvoices, fetchInvoice, updateInvoice, deleteInvoice };
 });
