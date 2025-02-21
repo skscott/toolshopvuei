@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import { Invoice } from '@/types';
 
 const baseApiUrl = `${import.meta.env.VITE_API_URL}`;
-// const url = `http://127.0.0.1:8050/api/invoices/`;
+const url = `${baseApiUrl}/api/invoices/`;
 
 export const useInvoiceStore = defineStore('invoice', () => {
     // State
@@ -26,23 +26,28 @@ export const useInvoiceStore = defineStore('invoice', () => {
         }
     }
 
-    // Fetch all invoices or filter by customerId
-    let url = baseApiUrl + `/api/invoices/`;
     async function fetchData(url: string) {
-
         loading.value = true;
         error.value = null;
+    
         try {
             const { data: invoicesData } = await axios.get(url);
-            invoices.value = invoicesData[0].invoices;
-
+    
+            // If the first item is an object with an "invoices" key, extract that
+            if (Array.isArray(invoicesData) && invoicesData.length > 0 && "invoices" in invoicesData[0]) {
+                invoices.value = invoicesData[0].invoices;
+            } 
+            // Otherwise, assume it's already a list of invoices
+            else {
+                invoices.value = invoicesData;
+            }
         } catch (err) {
             error.value = 'Failed to fetch invoices';
         } finally {
             loading.value = false;
         }
     }
-
+    
     // Fetch single invoice
     async function fetchInvoice(id: number) {
         loading.value = true;
