@@ -1,8 +1,8 @@
 export const invoice_status = [
-    { status: 'New',  description: 'New'},
-    { status: 'Paid',  description: 'Paid'},
-    { status: 'Pendimg',  description: 'Pendimg'},
-    { status: 'Cancelled',  description: 'Cancelled'},
-    { status: 'In Progress',  description: 'In Progress'},
-    { status: 'Completed',  description: 'Completed'},
+    { name: 'New',  code: 'New'},
+    { name: 'Paid',  code: 'Paid'},
+    { name: 'Pendimg',  code: 'Pendimg'},
+    { name: 'Cancelled',  code: 'Cancelled'},
+    { name: 'In Progress',  code: 'In Progress'},
+    { name: 'Completed',  code: 'Completed'},
 ];

@@ -14,6 +14,7 @@ const selectedCountry = ref(null); // Holds selected country object
 
 onMounted(async () => {
     await store.fetchCustomer(customerId.value);
+    console.log("EC ", european_countries);
     dropdownItems.value = european_countries;
     // After fetching, set the selectedCountry based on store.customer.country
     if (store.customer && store.customer.country) {

@@ -1,25 +1,42 @@
 <script setup lang="ts">
 
-import { ref, onMounted, computed, watchEffect } from 'vue';
+import { ref, onMounted, computed, watchEffect, watch } from 'vue';
 import { useUIStore } from '@/stores/ui';
 import { FilterMatchMode } from '@primevue/core/api';
 import { Checkbox, Column, InputText, useToast } from 'primevue';
 import Toast from 'primevue';
 import { useInvoiceStore } from '@/stores/invoice';
 import { Invoice } from '@/types';
+import { invoice_status } from '@/lists/invoice_status';
 
 const store = useInvoiceStore();
 const props = defineProps<{ customerId: number }>();
 const customerId = computed(() => props.customerId);
 
-// onMounted(() => {
-//     store.fetchInvoices();
-// });
+const selectedInvoice = ref(null); // Holds selected invoice status object
+const dropdownItems = ref(invoice_status); // Initialize dropdown items
 
-watchEffect(() => {
-    store.fetchFilteredInvoices(customerId.value);
+onMounted(async () => {
+    await store.fetchFilteredInvoices(customerId.value);
+    // Initialize selectedInvoice if store.invoice is populated
+    if (store.invoice && store.invoice.status) {
+        selectedInvoice.value = dropdownItems.value.find(item => item.code === store.invoice.status);
+    }
 });
 
+// Watch for changes in store.invoice and update selectedInvoice
+watch(() => store.invoice, (newVal) => {
+    if (newVal && newVal.status) {
+        selectedInvoice.value = dropdownItems.value.find(item => item.code === newVal.status);
+    }
+}, { immediate: true });
+
+// Watch for changes in selectedInvoice and update store.invoice.status
+watch(selectedInvoice, (newVal) => {
+    if (newVal) {
+        store.invoice.status = newVal.code; // Update store.invoice.status with the selected code
+    }
+});
 const filters = ref({'global': {value: null, matchMode: FilterMatchMode.CONTAINS}});
 const selectedInvoices = ref();
 const deleteUIDialog = false;
@@ -152,6 +169,7 @@ function getNumberRows() {
             <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
             <Column field="id" header="Id"></Column>
             <Column field="total_amount" header="Total Amount"></Column>
+            <Column field="status" header="Status"></Column>
             <Column header="Actions">
             <template #body="slotProps">
                 <!-- Actions Column for Edit and Delete -->
@@ -174,16 +192,21 @@ function getNumberRows() {
 
     <Dialog v-model:visible="dialogState.editDialog" :style="{ width: '600px' }" header="Invoice Details" :modal="true">
         <div class="flex flex-col gap-6">
-             <div class="card flex flex-col gap-4">
+            <div class="card flex flex-col gap-4">
                 <div class="grid grid-cols-12 gap-2">
                     <label for="name" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Amount</label>
                     <div class="col-span-12 md:col-span-9">
                         <InputText id="name" v-model="store.invoice.total_amount" required="true" rows="3" cols="20" fluid />
                     </div>
                 </div>
+                <div class="grid grid-cols-12 gap-2">
+                    <label for="name" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Status</label>
+                    <div class="col-span-12 md:col-span-9">
+                        <Select id="state" v-model="selectedInvoice" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full" /> 
+                    </div>
+                </div>
             </div>
         </div>
-        
         <template #footer>
             <Button label="Cancel" icon="pi pi-times" text @click="closeDialog('editDialog')" />
             <Button label="Save" icon="pi pi-check" @click="saveInvoice" />
