@@ -168,8 +168,10 @@ function getNumberRows() {
 
             <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
             <Column field="id" header="Id"></Column>
+            <Column field="invoice_number" header="Invoice Nbr."></Column>
             <Column field="total_amount" header="Total Amount"></Column>
             <Column field="status" header="Status"></Column>
+            <Column field="due_date" header="Due Date"></Column>
             <Column header="Actions">
             <template #body="slotProps">
                 <!-- Actions Column for Edit and Delete -->
@@ -194,6 +196,12 @@ function getNumberRows() {
         <div class="flex flex-col gap-6">
             <div class="card flex flex-col gap-4">
                 <div class="grid grid-cols-12 gap-2">
+                    <label for="invoice_number" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Invoice Nbr</label>
+                    <div class="col-span-12 md:col-span-9">
+                        <InputText id="name" v-model="store.invoice.invoice_number" required="true" rows="3" cols="20" fluid />
+                    </div>
+                </div>
+                <div class="grid grid-cols-12 gap-2">
                     <label for="name" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Amount</label>
                     <div class="col-span-12 md:col-span-9">
                         <InputText id="name" v-model="store.invoice.total_amount" required="true" rows="3" cols="20" fluid />
@@ -203,6 +211,12 @@ function getNumberRows() {
                     <label for="name" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Status</label>
                     <div class="col-span-12 md:col-span-9">
                         <Select id="state" v-model="selectedInvoice" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full" /> 
+                    </div>
+                </div>                
+                <div class="grid grid-cols-12 gap-2">
+                    <label for="due_date" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Due Date</label>
+                    <div class="col-span-12 md:col-span-9">
+                        <InputText type="date" id="name" v-model="store.invoice.due_date" required="true" rows="3" cols="20" fluid />
                     </div>
                 </div>
             </div>
