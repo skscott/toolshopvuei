@@ -1,24 +1,25 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useCustomerStore } from '@/stores/customer';
+import { european_countries } from '@/lists/european_countries';
 
 const store = useCustomerStore();
 
-const dropdownItems = ref([
-    { name: 'Great Britain', country: 'GB' },
-    { name: 'Option 2', country: 'Option 2' },
-    { name: 'Option 3', country: 'Option 3' }
-]);
+let dropdownItems = ref([]); // Holds the list of countries
 
-const dropdownItem = ref(null);
+// const dropdownItem = ref(null);
 const props = defineProps<{ customerId: number }>();
 const customerId = computed(() => props.customerId);
-
-onMounted(() => {
-    console.log("Mounted Customer Detail:", customerId.value);
-    store.fetchCustomer(customerId.value);
-});
 const selectedCountry = ref(null); // Holds selected country object
+
+onMounted(async () => {
+    await store.fetchCustomer(customerId.value);
+    dropdownItems.value = european_countries;
+    // After fetching, set the selectedCountry based on store.customer.country
+    if (store.customer && store.customer.country) {
+        selectedCountry.value = dropdownItems.value.find(item => item.country === store.customer.country);
+    }
+});
 
 // Watch for customer changes and update selectedCountry
 watch(store.customer, (newVal) => {

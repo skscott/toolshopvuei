@@ -21,6 +21,7 @@ export interface Customer {
 // Define Invoice interface
 export interface Invoice {
     id: number;
+    invoice_number: string;
     date_issued: string;
     due_date: string;
     total_amount: string;

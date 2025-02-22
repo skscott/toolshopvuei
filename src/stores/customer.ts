@@ -19,7 +19,6 @@ export const useCustomerStore = defineStore('customer', () => {
         try {
             const { data } = await axios.get(url);
             customers.value = data;
-            console.log("Fetched customers: ", customers.value);
         } catch (err) {
             error.value = 'Failed to fetch customers';
         } finally {
@@ -33,7 +32,6 @@ export const useCustomerStore = defineStore('customer', () => {
         error.value = null;
         try {
             const { data } = await axios.get(`${url}${id}/`);
-            console.log("Fetched customer: ", data);
             customer.value = data;
 
         } catch (err) {

@@ -15,7 +15,6 @@ const store = useCustomerStore();
 
 onMounted(() => {
     store.fetchCustomers();
-    console.log("Customers Table:", store.customers);
 });
 
 const filters = ref({'global': {value: null, matchMode: FilterMatchMode.CONTAINS}});

@@ -105,6 +105,10 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
     dialogState.value[type] = false;
 }
 
+function getNumberRows() {
+    // display a shorter table if the customer is selected
+    return customerId.value ? 5 : 10;
+}
 </script>
 
 <template>
@@ -126,7 +130,7 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
             v-model:selection="selectedInvoices"
             dataKey="id"
             :paginator="true"
-            :rows="10"
+            :rows="getNumberRows()"
             :filters="filters"
             tableStyle="min-width: 50rem"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
