@@ -3,7 +3,8 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { Customer } from '@/types';
 
-const url = `http://127.0.0.1:8050/api/customers/`;
+const baseApiUrl = `${import.meta.env.VITE_API_URL}`;
+const url = `${baseApiUrl}/api/customers`;
 
 export const useCustomerStore = defineStore('customer', () => {
     // State
