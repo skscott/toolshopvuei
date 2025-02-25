@@ -83,7 +83,7 @@ function isOutsideClicked(event) {
         <ToolshopSidebar ref="sidebarRef" />
         <div class="layout-content-wrapper">
             <div class="layout-content-wrapper-inside">
-                <AppTopbar />
+                <ToolshopTopbar />
                 <div class="layout-content">
                     <AppBreadcrumb />
                     <router-view />

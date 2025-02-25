@@ -2,7 +2,7 @@
 import { useLayout } from '@/layout/composables/layout';
 // import AppMenu from './AppMenu.vue';
 import ToolshopMenu from './ToolshopMenu.vue';
-import AppTopbar from './AppTopbar.vue';
+import ToolshopTopbar from './ToolshopTopbar.vue';
 
 const { layoutConfig, layoutState, isHorizontal } = useLayout();
 

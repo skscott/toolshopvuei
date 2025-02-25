@@ -226,7 +226,7 @@ const logout = async () => {
                             <li>
                                 <a class="label-small dark:text-surface-400 flex gap-2 py-2 px-2.5 rounded-lg items-center hover:bg-emphasis transition-colors duration-150 cursor-pointer">
                                     <i class="pi pi-power-off" />
-                                    <span @@click="logout" >Log out</span>
+                                    <span @click="logout" class="cursor-pointer text-primary-500 hover:underline">Loggy outy</span>
                                 </a>
                             </li>
                         </ul>
