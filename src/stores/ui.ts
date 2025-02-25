@@ -25,28 +25,6 @@ export const useUIStore = defineStore('ui', () => {
     const tariff = ref<any>(null);
     const error = ref<string | null>(null);
 
-    // Action: Fetch visibility data for components
-    // async function fetchComponentVisibility() {
-    //     loading.value = true;
-    //     error.value = null;
-    //     try {
-    //         const response = await axios.get(url);
-    //         // Reduce the response data to a Record<string, boolean>
-    //         const visibilityData = response.data.reduce(
-    //             (acc: Record<string, boolean>, item: any) => {
-    //                 acc[item.name] = item.is_visible;
-    //                 return acc;
-    //             },
-    //             {} as Record<string, boolean>
-    //         );
-    //         components.value = visibilityData;
-    //     } catch (err) {
-    //         error.value = 'Failed to fetch components';
-    //     } finally {
-    //         loading.value = false;
-    //     }
-    // }
-
     async function fetchComponentVisibility() {
         loading.value = true;
         error.value = null;

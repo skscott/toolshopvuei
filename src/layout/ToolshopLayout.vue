@@ -7,7 +7,7 @@ import AppFooter from './AppFooter.vue';
 import AppRightMenu from './AppRightMenu.vue';
 import AppSearch from './AppSearch.vue';
 import ToolshopSidebar from './ToolshopSideBar.vue';
-import AppTopbar from './AppTopbar.vue';
+import ToolshopTopbar from './ToolshopTopbar.vue';
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 const outsideClickListener = ref(null);

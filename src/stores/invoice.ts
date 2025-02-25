@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import { Invoice } from '@/types';
 
 const baseApiUrl = `${import.meta.env.VITE_API_URL}`;
-const url = `${baseApiUrl}/api/invoices/`;
+const url = `${baseApiUrl}/api/invoices`;
 
 export const useInvoiceStore = defineStore('invoice', () => {
     // State
@@ -16,8 +16,8 @@ export const useInvoiceStore = defineStore('invoice', () => {
     async function fetchFilteredInvoices(customerId?: number) {
         loading.value = true;
         const url = customerId
-            ? `${baseApiUrl}/api/customers/${customerId}/invoices/`
-            : `${baseApiUrl}/api/invoices/`;
+            ? `${baseApiUrl}/api/customers/${customerId}/invoices`
+            : `${baseApiUrl}/api/invoices`;
     
         try {
             await fetchData(url);

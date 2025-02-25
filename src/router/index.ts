@@ -9,6 +9,10 @@ import type { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
     {
+        path: '/',
+        redirect: '/auth/login' // Temporarily redirect the root path to login
+    },
+    {
         path: "/toolshop",
         component: ToolshopLayout,
         children: [
@@ -22,12 +26,13 @@ const routes: RouteRecordRaw[] = [
             { path: "invoices", component: () => import("@/views/apps/toolshop/Invoices.vue") },
             { path: "jobs", component: () => import("@/views/apps/toolshop/Jobs.vue") },
         ],
-    },    {
-        path: '/',
+    },    
+    {
+        path: '/dashboard',
         component: AppLayout,
         children: [
             {
-                path: '/',
+                path: '/dashboard',
                 name: 'e-commerce',
                 meta: {
                     breadcrumb: ['E-Commerce Dashboard']
@@ -407,7 +412,8 @@ const routes: RouteRecordRaw[] = [
             {
                 path: 'login',
                 name: 'login',
-                component: () => import('@/views/auth/LoginView.vue')
+                component: () => import('@/views/auth/ToolshopLoginView.vue')
+                // component: () => import('@/views/auth/LoginView.vue')
             },
             {
                 path: 'register',
