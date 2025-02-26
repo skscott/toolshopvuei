@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
-import axios, { AxiosError } from 'axios';
+// import axios, { AxiosError } from 'axios';
+import api from '@/utils/api';
 import { get_headers, get_headers_mock, handleError } from '@/lib/utils';
 import { ref } from 'vue';
 import { RawUIComponent } from '@/types';
@@ -30,7 +31,7 @@ export const useUIStore = defineStore('ui', () => {
         error.value = null;
         try {
             // Type the response as an array of RawUIComponent
-            const response = await axios.get<RawUIComponent[]>(url);
+            const response = await api.get<RawUIComponent[]>(url);
             // Transform each raw component into a UIComponent
             const transformedComponents = response.data.map(transformUIComponent);
             // Reduce the transformed components into a visibility map
@@ -55,7 +56,7 @@ export const useUIStore = defineStore('ui', () => {
         loading.value = true;
         errorMessage.value = null;
         try {
-            const response = await axios.get<UIComponent[]>(url);
+            const response = await api.get<UIComponent[]>(url);
             ui_components.value = response.data;
         } catch (err) {
             errorMessage.value = 'Failed to fetch UI components';
@@ -73,11 +74,11 @@ export const useUIStore = defineStore('ui', () => {
         try {
             if (id === 0) {
                 // Create new component
-                await axios.post(url, component.value, { headers });
+                await api.post(url, component.value, { headers });
                 successMessage.value = 'Component created successfully!';
             } else {
                 // Update existing component
-                await axios.put(url + id + "/", component.value, { headers });
+                await api.put(url + id + "/", component.value, { headers });
                 // Refresh UI components and visibility data after update
                 await fetchUIComponents();
                 await fetchComponentVisibility();
@@ -96,7 +97,7 @@ export const useUIStore = defineStore('ui', () => {
         loading.value = true;
         try {
             const headers = get_headers_mock();
-            const response = await axios.delete(url + id + "/", { headers });
+            const response = await api.delete(url + id + "/", { headers });
             tariff.value = response.data;
         } catch (err) {
             error.value = 'Failed to deleteComponent';
