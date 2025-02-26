@@ -29,7 +29,7 @@ const routes: RouteRecordRaw[] = [
     },    
     {
         path: '/dashboard',
-        component: AppLayout,
+        component: ToolshopLayout,
         children: [
             {
                 path: '/dashboard',

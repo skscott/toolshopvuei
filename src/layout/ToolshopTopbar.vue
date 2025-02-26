@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { useLayout } from '@/layout/composables/layout';
 import { ref } from 'vue';
 import AppBreadcrumb from './AppBreadcrumb.vue';
@@ -98,22 +98,28 @@ function showRightMenu() {
     layoutState.rightMenuVisible = !layoutState.rightMenuVisible;
 }
 
+import { Checkbox, Column, InputText, useToast } from 'primevue';
+import axios, { AxiosError } from 'axios';
 const baseApiUrl = `${import.meta.env.VITE_API_URL}`;
 const url = `${baseApiUrl}/api/logout/`;
+const errorMessage = ref<string | null>(null);
+import router from '@/router';
+import { useAuthStore } from '@/stores/auth';
 
-const logout = async () => {
-    try {
-        const response = await axios.post(url, {});
-        localStorage.removeItem('token');
+let store = useAuthStore();
+let toast = useToast();
+function logout(){
+    try{
+        store.logout();
+        toast.add({severity:'success', summary: 'Successful', detail: 'Logged out', life: 1000});
         router.push('/');
-
-    } catch (error) {
-        errorMessage.value = 'Invalid username or password';
+    }
+    catch (error) {
+        toast.add({severity:'error', summary: 'Unsuccessful', detail: 'Error on logout', life: 3000});
+        errorMessage.value = 'Log out failed';
         console.error(error);
     }
-};
-
-
+}
 </script>
 
 <template>
@@ -226,7 +232,7 @@ const logout = async () => {
                             <li>
                                 <a class="label-small dark:text-surface-400 flex gap-2 py-2 px-2.5 rounded-lg items-center hover:bg-emphasis transition-colors duration-150 cursor-pointer">
                                     <i class="pi pi-power-off" />
-                                    <span @click="logout" class="cursor-pointer text-primary-500 hover:underline">Loggy outy</span>
+                                    <span @click="logout" class="cursor-pointer text-primary-500 hover:underline">Log out</span>
                                 </a>
                             </li>
                         </ul>
