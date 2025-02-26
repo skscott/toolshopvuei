@@ -1,10 +1,12 @@
-import axios from 'axios';
+// import axios from 'axios';
+import api from '@/utils/api';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { Customer } from '@/types';
+// import { get_headers } from './headers';
 
 const baseApiUrl = `${import.meta.env.VITE_API_URL}`;
-const url = `${baseApiUrl}/api/customers`;
+const url = `${baseApiUrl}/api/customers/`;
 
 export const useCustomerStore = defineStore('customer', () => {
     // State
@@ -18,7 +20,8 @@ export const useCustomerStore = defineStore('customer', () => {
         loading.value = true;
         error.value = null;
         try {
-            const { data } = await axios.get(url);
+            // const headers = get_headers();
+            const { data } = await api.get(url); 
             customers.value = data;
         } catch (err) {
             error.value = 'Failed to fetch customers';
@@ -32,7 +35,8 @@ export const useCustomerStore = defineStore('customer', () => {
         loading.value = true;
         error.value = null;
         try {
-            const { data } = await axios.get(`${url}${id}/`);
+            // const headers = get_headers();
+            const { data } = await api.get(`${url}${id}/`);
             customer.value = data;
 
         } catch (err) {
@@ -46,7 +50,7 @@ export const useCustomerStore = defineStore('customer', () => {
     // Update customer
     async function updateCustomer() {
         try {
-            await axios.patch(`${url}${customer.value.id}/`, customer.value);
+            await api.patch(`${url}${customer.value.id}/`, customer.value);
             await fetchCustomers(); // Refresh data
         } catch (err) {
             error.value = 'Failed to update customer';
@@ -56,13 +60,12 @@ export const useCustomerStore = defineStore('customer', () => {
     // Delete customer
     async function deleteCustomer(customerId: number) {
         try {
-            await axios.delete(`${url}${customerId}/`);
+            await api.delete(`${url}${customerId}/`);
             await fetchCustomers(); // Refresh data
         } catch (err) {
             error.value = 'Failed to delete customer';
         }
     }
-
     // Return state and functions
     return { customers, customer, loading, error, fetchCustomers, fetchCustomer, updateCustomer, deleteCustomer };
 });
