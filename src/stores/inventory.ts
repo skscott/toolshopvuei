@@ -1,7 +1,7 @@
 import api from '@/utils/api';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { Inventory } from '@/types';
+import { Inventory, InventoryItem } from '@/types';
 
 const baseApiUrl = `${import.meta.env.VITE_API_URL}`;
 const url = `${baseApiUrl}/api/inventory/`;
@@ -10,6 +10,8 @@ export const useInventoryStore = defineStore('inventory', () => {
     // State
     const inventories = ref<Inventory[]>([]);
     const inventory = ref<Inventory | null>({} as Inventory); // ✅ Ensure it's always an object
+    const inventoryItems = ref<InventoryItem[]>([]);
+    const inventoryItem = ref<InventoryItem | null>({} as InventoryItem); // ✅ Ensure it's always an object
     const loading = ref(false);
     const error = ref<string | null>(null);
 
@@ -27,6 +29,20 @@ export const useInventoryStore = defineStore('inventory', () => {
         }
     }
 
+    // Fetch all inventory Items
+    async function fetchInventoryItems(inventoryId: number) {
+        loading.value = true;
+        error.value = null;
+        try {
+            const { data } = await api.get(`${url}${inventoryId}/`);
+            inventoryItems.value = data.items;
+        } catch (err) {
+            error.value = 'Failed to fetch inventory items';
+        } finally {
+            loading.value = false;
+        }
+    }
+        
     // Fetch single inventory
     async function fetchInventory(id: number) {
         loading.value = true;
@@ -63,5 +79,6 @@ export const useInventoryStore = defineStore('inventory', () => {
         }
     }
     // Return state and functions
-    return { inventories, inventory, loading, error, fetchInventories, fetchInventory, updateInventory, deleteInventory };
+    return { inventories, inventory, inventoryItem, inventoryItems, loading, error, 
+        fetchInventories, fetchInventory, updateInventory, deleteInventory, fetchInventoryItems };
 });

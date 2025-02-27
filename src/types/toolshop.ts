@@ -134,6 +134,7 @@ export interface InventoryItem {
     sku: string;
     price: string;
     stock_quantity: number;
+    inventory_name: string;
     inventory_id: number;
 }
 
