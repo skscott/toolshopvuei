@@ -1,10 +1,11 @@
-import axios from 'axios';
+// import axios from 'axios';
+import api from '@/utils/api';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { Invoice } from '@/types';
 
 const baseApiUrl = `${import.meta.env.VITE_API_URL}`;
-const url = `${baseApiUrl}/api/invoices`;
+const url = `${baseApiUrl}/api/invoices/`;
 
 export const useInvoiceStore = defineStore('invoice', () => {
     // State
@@ -16,8 +17,8 @@ export const useInvoiceStore = defineStore('invoice', () => {
     async function fetchFilteredInvoices(customerId?: number) {
         loading.value = true;
         const url = customerId
-            ? `${baseApiUrl}/api/customers/${customerId}/invoices`
-            : `${baseApiUrl}/api/invoices`;
+            ? `${baseApiUrl}/api/customers/${customerId}/invoices/`
+            : `${baseApiUrl}/api/invoices/`;
     
         try {
             await fetchData(url);
@@ -31,7 +32,7 @@ export const useInvoiceStore = defineStore('invoice', () => {
         error.value = null;
     
         try {
-            const { data: invoicesData } = await axios.get(url);
+            const { data: invoicesData } = await api.get(url);
     
             // If the first item is an object with an "invoices" key, extract that
             if (Array.isArray(invoicesData) && invoicesData.length > 0 && "invoices" in invoicesData[0]) {
@@ -53,7 +54,7 @@ export const useInvoiceStore = defineStore('invoice', () => {
         loading.value = true;
         error.value = null;
         try {
-            const { data } = await axios.get(`${url}${id}/`);
+            const { data } = await api.get(`${url}${id}/`);
             invoice.value = data;
         } catch (err) {
             error.value = 'Failed to fetch invoice';
@@ -65,7 +66,7 @@ export const useInvoiceStore = defineStore('invoice', () => {
     // Update invoice
     async function updateInvoice() {
         try {
-            await axios.patch(`${url}${invoice.value.id}/`, invoice.value);
+            await api.patch(`${url}${invoice.value.id}/`, invoice.value);
             await fetchFilteredInvoices(); // Refresh data
         } catch (err) {
             error.value = 'Failed to update invoice';
@@ -75,7 +76,7 @@ export const useInvoiceStore = defineStore('invoice', () => {
     // Delete invoice
     async function deleteInvoice(invoiceId: number) {
         try {
-            await axios.delete(`${url}${invoiceId}/`);
+            await api.delete(`${url}${invoiceId}/`);
             await fetchFilteredInvoices(); // Refresh data
         } catch (err) {
             error.value = 'Failed to delete invoice';
