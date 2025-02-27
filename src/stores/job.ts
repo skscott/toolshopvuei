@@ -2,7 +2,6 @@ import api from '@/utils/api';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { Job } from '@/types';
-// import { get_headers } from './headers';
 
 const baseApiUrl = `${import.meta.env.VITE_API_URL}`;
 const url = `${baseApiUrl}/api/jobs/`;
@@ -14,6 +13,24 @@ export const useJobStore = defineStore('job', () => {
     const loading = ref(false);
     const error = ref<string | null>(null);
 
+    // Fetch all jobs
+    async function fetchJobsByCustomerId(customerId: number) {
+        const custjobsurl = `${baseApiUrl}/api/customers/${customerId}/jobs/`;
+        loading.value = true;
+        error.value = null;
+        try {
+            const { data } = await api.get(custjobsurl); 
+            if (Array.isArray(data) && data.length > 0 && "jobs" in data[0]) {
+                jobs.value = data[0].jobs;
+            } 
+
+        } catch (err) {
+            error.value = 'Failed to fetch jobs';
+        } finally {
+            loading.value = false;
+        }
+    }
+        
     // Fetch all jobs
     async function fetchJobs() {
         loading.value = true;
@@ -66,5 +83,5 @@ export const useJobStore = defineStore('job', () => {
         }
     }
     // Return state and functions
-    return { jobs, job, loading, error, fetchJobs, fetchJob, updateJob, deleteJob };
+    return { jobs, job, loading, error, fetchJobs, fetchJob, fetchJobsByCustomerId, updateJob, deleteJob };
 });

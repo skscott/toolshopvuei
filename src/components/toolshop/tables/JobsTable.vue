@@ -9,12 +9,14 @@ import { useJobStore } from '@/stores/job';
 import { useRouter } from 'vue-router';
 import { Job } from '@/types';
 
-const router = useRouter();
+const props = defineProps<{ customerId: number }>();
+const customerId = computed(() => props.customerId);
 
+const router = useRouter();
 const store = useJobStore();
 
 onMounted(() => {
-    store.fetchJobs();
+    store.fetchJobsByCustomerId(customerId.value);
 });
 
 const filters = ref({'global': {value: null, matchMode: FilterMatchMode.CONTAINS}});
@@ -149,10 +151,10 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
             </template>
 
             <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
-            <Column field="id" header="Id"></Column>
-            <Column field="name" header="Name"></Column>
-            <Column field="city" header="City"></Column>
-            <Column field="postal_code" header="Postal Code"></Column>
+            <Column field="job_title" header="Job Title"></Column>
+            <Column field="description" header="Description"></Column>
+            <Column field="status" header="Status"></Column>
+            <Column field="cost_estimate" header="Cost Estimate"></Column>
             <Column header="Actions">
             <template #body="slotProps">
                 <!-- Actions Column for Edit and Delete -->
