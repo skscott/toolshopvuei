@@ -138,4 +138,26 @@ export interface InventoryItem {
     inventory_id: number;
 }
 
+export interface RawJob extends GormModel {
+    id: number;
+    job_title: string;
+    description: string;
+    status: string;
+    start_date: string;
+    end_date: string;
+    cost_estimate: string;
+    actual_cost: string;
+    customer_id: number;
+}
 
+export interface Job {
+    id: number;
+    job_title: string;
+    description: string;
+    status: string;
+    start_date: string;
+    end_date: string;
+    cost_estimate: string;
+    actual_cost: string;
+    customer_id: number;
+}
