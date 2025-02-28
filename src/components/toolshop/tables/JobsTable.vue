@@ -1,19 +1,22 @@
 <script setup lang="ts">
 
-import { ref, onMounted, computed, Text } from 'vue';
+import { ref, onMounted, computed, Text, watch } from 'vue';
 import { useUIStore } from '@/stores/ui';
 import { FilterMatchMode } from '@primevue/core/api';
-import { Checkbox, Column, InputText, useToast } from 'primevue';
+import { Checkbox, Column, InputNumber, InputText, useToast } from 'primevue';
 import Toast from 'primevue';
 import { useJobStore } from '@/stores/job';
 import { useRouter } from 'vue-router';
 import { Job } from '@/types';
+import { job_status } from '@/lists/job_status';
 
 const props = defineProps<{ customerId: number }>();
 const customerId = computed(() => props.customerId);
 
 const router = useRouter();
 const store = useJobStore();
+// const selectedJobStatus = ref(null); // Holds selected invoice status object
+// const dropdownItems = ref(job_status); // Initialize dropdown items
 
 onMounted(() => {
     store.fetchJobsByCustomerId(customerId.value);
@@ -192,7 +195,22 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
                     <div class="col-span-12 md:col-span-9">
                         <InputText id="description" v-model="store.job.description" required="true" rows="3" cols="20" fluid />
                     </div>
-
+                    <label for="start_date" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Start Date</label>
+                    <div class="col-span-12 md:col-span-9">
+                        <InputText type="date" id="start_date" v-model="store.job.start_date" required="true" rows="3" cols="20" fluid />
+                    </div>
+                    <label for="end_date" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">End Date</label>
+                    <div class="col-span-12 md:col-span-9">
+                        <InputText type="date" id="end_date" v-model="store.job.end_date" required="true" rows="3" cols="20" fluid />
+                    </div>
+                    <label for="cost_estimate" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Cost Estimate</label>
+                    <div class="col-span-12 md:col-span-9">
+                        <InputText type="currency" id="end_date" v-model="store.job.cost_estimate" required="true" rows="3" cols="20" fluid />
+                    </div>
+                    <label for="actual_cost" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Actual Cost</label>
+                    <div class="col-span-12 md:col-span-9">
+                        <InputText type="currency" id="end_date" v-model="store.job.actual_cost" required="true" rows="3" cols="20" fluid />
+                    </div>
                 </div>
             </div>
         </div>
