@@ -20,12 +20,12 @@ onMounted(async () => {
             <div class="font-semibold text-xl">Inventory Detail</div>
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex flex-wrap gap-2 w-full">
-                    <label for="name">Company Name</label>
-                    <InputText id="name" type="text" v-model="store.inventory.name" />
+                    <label for="name">Inventory Name</label>
+                    <InputText id="name" disabled type="text" v-model="store.inventory.name" />
                 </div>
                 <div class="flex flex-wrap gap-2 w-full">
-                    <label for="state">Address</label>
-                    <InputText id="zip" type="text" v-model="store.inventory.description" />
+                    <label for="state">Description</label>
+                    <InputText id="zip" disabled type="text" v-model="store.inventory.description" />
                 </div>
             </div>
         </div>

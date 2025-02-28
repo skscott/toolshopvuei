@@ -44,42 +44,42 @@ watch(selectedCountry, (newVal) => {
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex flex-wrap gap-2 w-full">
                     <label for="name">Company Name</label>
-                    <InputText id="name" type="text" v-model="store.customer.name" />
+                    <InputText id="name" disabled type="text" v-model="store.customer.name" />
                 </div>
                 <div class="flex flex-wrap gap-2 w-full">
-                    <label for="state">Address</label>
-                    <InputText id="zip" type="text" v-model="store.customer.street_address" />
+                    <label for="street_address">Address</label>
+                    <InputText id="street_address" disabled type="text" v-model="store.customer.street_address" />
                 </div>
             </div>
 
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex flex-wrap gap-2 w-full">
-                    <label for="zip">City</label>
-                    <InputText id="zip" type="text" v-model="store.customer.city"/>
+                    <label for="city">City</label>
+                    <InputText id="city" disabled type="text" v-model="store.customer.city"/>
                 </div>
                 <div class="flex flex-wrap gap-2 w-full">
-                    <label for="zip">Postal Code</label>
-                    <InputText id="zip" type="text" v-model="store.customer.postal_code" />
-                </div>
-            </div>
-            <div class="flex flex-col md:flex-row gap-4">
-                <div class="flex flex-wrap gap-2 w-full">
-                    <label for="state">VAT Nbr</label>
-                    <InputText id="name" type="text" v-model="store.customer.vat_number" />
-                </div>
-                <div class="flex flex-wrap gap-2 w-full">
-                    <label for="zip">Email</label>
-                    <InputText id="zip" type="text" v-model="store.customer.email" />
+                    <label for="postal_code">Postal Code</label>
+                    <InputText id="postal_code" disabled type="text" v-model="store.customer.postal_code" />
                 </div>
             </div>
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex flex-wrap gap-2 w-full">
-                    <label for="state">country</label>
-                    <Select id="state" v-model="selectedCountry" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full" /> 
+                    <label for="vat_number">VAT Nbr</label>
+                    <InputText id="vat_number" disabled type="text" v-model="store.customer.vat_number" />
                 </div>
                 <div class="flex flex-wrap gap-2 w-full">
-                    <label for="state">Phone Number</label>
-                    <InputText id="zip" type="text" v-model="store.customer.phone" />
+                    <label for="email">Email</label>
+                    <InputText id="email" disabled type="text" v-model="store.customer.email" />
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex flex-wrap gap-2 w-full">
+                    <label for="country">Country</label>
+                    <Select id="country" disabled v-model="selectedCountry" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full" /> 
+                </div>
+                <div class="flex flex-wrap gap-2 w-full">
+                    <label for="phone">Phone Number</label>
+                    <InputText id="phone" disabled type="text" v-model="store.customer.phone" />
                 </div>
             </div>
         </div>

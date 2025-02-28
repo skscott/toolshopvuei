@@ -175,11 +175,6 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
                 <!-- Actions Column for Edit and Delete -->
                 <div class="flex gap-2">
                     <Button 
-                    icon="pi pi-eye" 
-                    class="p-button-rounded p-button-success p-mr-2 "
-                    @click="detailJob(slotProps.data)" 
-                    />
-                    <Button 
                     icon="pi pi-pencil" 
                     class="p-button-rounded p-button-info p-mr-2"
                     @click="editJob(slotProps.data)" 
