@@ -12,16 +12,10 @@ import { job_status } from '@/lists/job_status';
 
 const props = defineProps<{ customerId: number }>();
 const customerId = computed(() => props.customerId);
-
 const router = useRouter();
 const store = useJobStore();
-// const selectedJobStatus = ref(null); // Holds selected invoice status object
-// const dropdownItems = ref(job_status); // Initialize dropdown items
-
-onMounted(() => {
-    store.fetchJobsByCustomerId(customerId.value);
-});
-
+const selectedJobStatus = ref(null); // Holds selected invoice status object
+const dropdownItems = ref(job_status); // Initialize dropdown items
 const filters = ref({'global': {value: null, matchMode: FilterMatchMode.CONTAINS}});
 const selectedJobs = ref();
 const deleteUIDialog = false;
@@ -34,6 +28,24 @@ const dialogState = ref({
     editDialog: false,
     deleteDialog: false,
     deletesDialog: false,
+});
+
+onMounted(() => {
+    store.fetchJobsByCustomerId(customerId.value);
+});
+
+// Watch for changes in store.invoice and update selectedInvoice
+watch(() => store.job, (newVal) => {
+    if (newVal && newVal.status) {
+        selectedJobStatus.value = dropdownItems.value.find(item => item.code === newVal.status);
+    }
+}, { immediate: true });
+
+// Watch for changes in selectedInvoice and update store.invoice.status
+watch(selectedJobStatus, (newVal) => {
+    if (newVal) {
+        store.job.status = newVal.code; // Update store.invoice.status with the selected code
+    }
 });
 
 function openNew(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
@@ -211,7 +223,11 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
                     <div class="col-span-12 md:col-span-9">
                         <InputText type="currency" id="end_date" v-model="store.job.actual_cost" required="true" rows="3" cols="20" fluid />
                     </div>
-                </div>
+                    <label for="name" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Status</label>
+                    <div class="col-span-12 md:col-span-9">
+                        <Select id="state" v-model="selectedJobStatus" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full" /> 
+                    </div>   
+                </div>   
             </div>
         </div>
         
