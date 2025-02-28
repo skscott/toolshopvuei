@@ -1,16 +1,15 @@
 <script setup lang="ts">
 
 import { ref, onMounted, computed, Text } from 'vue';
-import { useUIStore } from '@/stores/ui';
 import { FilterMatchMode } from '@primevue/core/api';
 import { Checkbox, Column, InputText, useToast } from 'primevue';
 import Toast from 'primevue';
 import { useCustomerStore } from '@/stores/customer';
 import { useRouter } from 'vue-router';
 import { Customer } from '@/types';
+import { nameRules, cityRules, postcodeRules, countryRules } from '@/utils/validationRules';
 
 const router = useRouter();
-
 const store = useCustomerStore();
 
 onMounted(() => {
@@ -184,19 +183,23 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
                 <div class="grid grid-cols-12 gap-2">
                     <label for="name" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Name</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText id="name" v-model="store.customer.name" required="true" rows="3" cols="20" fluid />
+                        <InputText id="name" v-model="store.customer.name" required="true" rows="3" cols="20" fluid 
+                        :rules="nameRules"/>
                     </div>
                     <label for="city" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">City</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText id="name" v-model="store.customer.city" required="true" rows="3" cols="20" fluid />
+                        <InputText id="name" v-model="store.customer.city" required="true" rows="3" cols="20" fluid 
+                        :rules="cityRules"/>
                     </div>
                     <label for="postal_code" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Postal Code</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText id="postal_code" v-model="store.customer.postal_code" required="true" rows="3" cols="20" fluid />
+                        <InputText id="postal_code" v-model="store.customer.postal_code" required="true" rows="3" cols="20" fluid 
+                        :rules="postcodeRules"/>
                     </div>
                     <label for="country" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Country</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText id="postal_code" v-model="store.customer.country" required="true" rows="3" cols="20" fluid />
+                        <InputText id="postal_code" v-model="store.customer.country" required="true" rows="3" cols="20" fluid 
+                        :rules="countryRules"/>
                     </div>
                     <label for="contact_name" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Contact Name</label>
                     <div class="col-span-12 md:col-span-9">
