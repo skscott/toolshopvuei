@@ -1,13 +1,12 @@
 <script setup lang="ts">
-
-import { ref, onMounted, computed, Text } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { Checkbox, Column, InputText, useToast } from 'primevue';
 import Toast from 'primevue';
 import { useCustomerStore } from '@/stores/customer';
 import { useRouter } from 'vue-router';
 import { Customer } from '@/types';
-import { nameRules, cityRules, postcodeRules, countryRules } from '@/utils/validationRules';
+import { useValidation, requiredRule, minLengthRule, emailRule } from '@/composables/useValidation';
 
 const router = useRouter();
 const store = useCustomerStore();
@@ -15,6 +14,17 @@ const store = useCustomerStore();
 onMounted(() => {
     store.fetchCustomers();
 });
+
+const rules = {
+    name: [requiredRule, minLengthRule(3)],
+    city: [requiredRule, minLengthRule(3)],
+    postal_code: [requiredRule],
+    country: [requiredRule],
+    contact_name: [requiredRule],
+    email: [requiredRule, emailRule],
+};
+
+const { errors, validate, validateField, resetValidation } = useValidation(rules);
 
 const filters = ref({'global': {value: null, matchMode: FilterMatchMode.CONTAINS}});
 const selectedCustomers = ref();
@@ -32,12 +42,13 @@ const dialogState = ref({
 
 function openNew(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
     dialogState.value[type] = true;
-    store.customer = {} as Customer 
+    store.customer = {} as Customer;
 }
 
 function editCustomer(customer) {
     console.log("Customer edit:", customer);
     store.customer = {...customer};
+    resetValidation(); // Reset validation errors
     openDialog('editDialog');
 };
 
@@ -56,22 +67,23 @@ function findIndexById(id: number) {
     return index;
 };
 
-function saveCustomer() {
-    submitted.value = true;
+// Disable the save button if there are any errors
+const hasErrors = computed(() => {
+  return Object.values(errors.value).some((error) => error !== '');
+});
 
-    if (store.customer?.name?.trim()) {
-        if (store.customer.id) {
-            store.customers[findIndexById(store.customer.id)] = store.customer;
-            toast.add({severity:'success', summary: 'Successful', detail: 'Customer Updated', life: 3000});
-        }
-        else {
-            store.customers.push(store.customer);
-            toast.add({severity:'success', summary: 'Successful', detail: 'Customer Created', life: 3000});
-        }
-        store.updateCustomer();
-        closeDialog('editDialog');
-        store.customer = { } as Customer;
+function saveCustomer() {
+    if (store.customer.id) {
+        store.customers[findIndexById(store.customer.id)] = store.customer;
+        toast.add({severity:'success', summary: 'Successful', detail: 'Customer Updated', life: 3000});
     }
+    else {
+        store.customers.push(store.customer);
+        toast.add({severity:'success', summary: 'Successful', detail: 'Customer Created', life: 3000});
+    }
+    store.updateCustomer();
+    closeDialog('editDialog');
+    store.customer = { } as Customer;
 };
 
 function deleteCustomer(customer: any) {
@@ -106,7 +118,6 @@ function openDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
 function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
     dialogState.value[type] = false;
 }
-
 </script>
 
 <template>
@@ -184,27 +195,34 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
                     <label for="name" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Name</label>
                     <div class="col-span-12 md:col-span-9">
                         <InputText id="name" v-model="store.customer.name" required="true" rows="3" cols="20" fluid 
-                        :rules="nameRules"/>
+                        @blur="validateField('name', store.customer.name)"/>
+                        <InlineMessage v-if="errors.name" severity="error">{{ errors.name }}</InlineMessage>
                     </div>
                     <label for="city" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">City</label>
                     <div class="col-span-12 md:col-span-9">
                         <InputText id="name" v-model="store.customer.city" required="true" rows="3" cols="20" fluid 
-                        :rules="cityRules"/>
+                        @blur="validateField('city', store.customer.city)"/>
+                        <InlineMessage v-if="errors.city" severity="error">{{ errors.name }}</InlineMessage>
                     </div>
                     <label for="postal_code" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Postal Code</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText id="postal_code" v-model="store.customer.postal_code" required="true" rows="3" cols="20" fluid 
-                        :rules="postcodeRules"/>
+                        <InputText id="postal_code" v-model="store.customer.postal_code" required="true" rows="3" cols="20" fluid
+                        @blur="validateField('postal_code', store.customer.postal_code)"/> 
+                        <InlineMessage v-if="errors.postal_code" severity="error">{{ errors.postal_code }}</InlineMessage>
+
                     </div>
                     <label for="country" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Country</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText id="postal_code" v-model="store.customer.country" required="true" rows="3" cols="20" fluid 
-                        :rules="countryRules"/>
+                        <InputText id="country" v-model="store.customer.country" required="true" rows="3" cols="20" fluid 
+                        @blur="validateField('country', store.customer.country)"/>
+                        <InlineMessage v-if="errors.country" severity="error">{{ errors.country }}</InlineMessage>
                     </div>
                     <label for="contact_name" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Contact Name</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText id="contact_name" v-model="store.customer.contact_name" required="true" rows="3" cols="20" fluid />
-                    </div>
+                        <InputText id="contact_name" v-model="store.customer.contact_name" required="true" rows="3" cols="20" fluid 
+                        @blur="validateField('contact_name', store.customer.contact_name)"/>
+                        <InlineMessage v-if="errors.city" severity="error">{{ errors.city }}</InlineMessage>
+                    </div>                    
                     <label for="email" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">E-mail</label>
                     <div class="col-span-12 md:col-span-9">
                         <InputText id="contact_name" v-model="store.customer.email" required="true" rows="3" cols="20" fluid />
@@ -219,7 +237,7 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
         
         <template #footer>
             <Button label="Cancel" icon="pi pi-times" text @click="closeDialog('editDialog')" />
-            <Button label="Save" icon="pi pi-check" @click="saveCustomer" />
+            <Button label="Save" icon="pi pi-check" :disabled="hasErrors" @click="saveCustomer" />
         </template>
     </Dialog>
 
@@ -249,4 +267,3 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
     </Dialog>
 
 </template>
-

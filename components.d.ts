@@ -64,6 +64,7 @@ declare module 'vue' {
     IconField: typeof import('primevue/iconfield')['default']
     Image: typeof import('primevue/image')['default']
     IncomeExpenditureWidget: typeof import('./src/components/dashboard/banking/IncomeExpenditureWidget.vue')['default']
+    InlineMessage: typeof import('primevue/inlinemessage')['default']
     InputGroup: typeof import('primevue/inputgroup')['default']
     InputGroupAddon: typeof import('primevue/inputgroupaddon')['default']
     InputIcon: typeof import('primevue/inputicon')['default']

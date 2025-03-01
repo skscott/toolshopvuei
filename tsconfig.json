@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["ES2016", "DOM"],
+    "lib": ["ES2017", "DOM"],
     "outDir": "./dist",
     "module": "esnext",             // ✅ Change to 'esnext' or 'es2020'
     "target": "esnext",
