@@ -8,6 +8,7 @@ import Toast from 'primevue';
 import { useInvoiceStore } from '@/stores/invoice';
 import { Invoice } from '@/types';
 import { invoice_status } from '@/lists/invoice_status';
+import { useValidation, requiredRule, greaterThanRule, sensibleDateRule, minLengthRule, emailRule } from '@/composables/useValidation';
 
 const store = useInvoiceStore();
 const props = defineProps<{ customerId: number }>();
@@ -15,6 +16,27 @@ const customerId = computed(() => props.customerId);
 
 const selectedInvoice = ref(null); // Holds selected invoice status object
 const dropdownItems = ref(invoice_status); // Initialize dropdown items
+
+// Validation stuff
+const rules = {
+    invoice_number: [requiredRule],
+    date_issued: [requiredRule],
+    due_date: [
+    requiredRule,
+    sensibleDateRule(
+      'date_issued', () => store.invoice.date_issued,
+      'Due Date', // Display name for due_date
+      'Date Issued' // Display name for date_issued
+    ),
+  ],
+};
+
+const { errors, validate, validateField, resetValidation} = useValidation(rules);
+// Belt and braces. Disable the save button if there are any errors
+const hasErrors = computed(() => {
+  return Object.values(errors.value).some((error) => error !== '');
+});
+
 
 onMounted(async () => {
     await store.fetchFilteredInvoices(customerId.value);
@@ -59,6 +81,7 @@ function openNew(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
 function editInvoice(invoice: Invoice) {
     console.log("Invoice edit:", invoice);
     store.invoice = {...invoice};
+    resetValidation(); // Reset validation errors
     openDialog('editDialog');
 };
 
@@ -198,32 +221,45 @@ function getNumberRows() {
                 <div class="grid grid-cols-12 gap-2">
                     <label for="invoice_number" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Invoice Nbr</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText id="name" v-model="store.invoice.invoice_number" required="true" rows="3" cols="20" fluid />
+                        <InputText id="invoice_number" v-model="store.invoice.invoice_number" required="true" rows="3" cols="20" fluid
+                        @blur="validateField('name', store.invoice.invoice_number)"/>
+                        <InlineMessage v-if="errors.invoice_number" severity="error">{{ errors.invoice_number }}</InlineMessage>
                     </div>
                 </div>
                 <div class="grid grid-cols-12 gap-2">
-                    <label for="name" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Amount</label>
+                    <label for="total_amount" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Amount</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText id="name" v-model="store.invoice.total_amount" required="true" rows="3" cols="20" fluid />
+                        <InputText id="total_amount" v-model="store.invoice.total_amount" required="true" rows="3" cols="20" fluid
+                        @blur="validateField('total_amount', store.invoice.total_amount)"/>
+                        <InlineMessage v-if="errors.total_amount" severity="error">{{ errors.total_amount }}</InlineMessage>
                     </div>
                 </div>
                 <div class="grid grid-cols-12 gap-2">
-                    <label for="name" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Status</label>
+                    <label for="status" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Status</label>
                     <div class="col-span-12 md:col-span-9">
                         <Select id="state" v-model="selectedInvoice" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full" /> 
                     </div>
                 </div>                
                 <div class="grid grid-cols-12 gap-2">
+                    <label for="date_issued" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Date Issued</label>
+                    <div class="col-span-12 md:col-span-9">
+                        <InputText type="date" id="date_issued" v-model="store.invoice.date_issued" required="true" rows="3" cols="20" fluid
+                        @blur="validateField('date_issued', store.invoice.date_issued)"/>
+                        <InlineMessage v-if="errors.date_issued" severity="error">{{ errors.date_issued }}</InlineMessage>
+                    </div>
+                </div>  <div class="grid grid-cols-12 gap-2">
                     <label for="due_date" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Due Date</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText type="date" id="name" v-model="store.invoice.due_date" required="true" rows="3" cols="20" fluid />
+                        <InputText type="date" id="due_date" v-model="store.invoice.due_date" required="true" rows="3" cols="20" fluid
+                        @blur="validateField('due_date', store.invoice.due_date)"/>
+                        <InlineMessage v-if="errors.due_date" severity="error">{{ errors.due_date }}</InlineMessage>
                     </div>
                 </div>
             </div>
         </div>
         <template #footer>
             <Button label="Cancel" icon="pi pi-times" text @click="closeDialog('editDialog')" />
-            <Button label="Save" icon="pi pi-check" @click="saveInvoice" />
+            <Button label="Save" icon="pi pi-check" :disabled="hasErrors" @click="saveInvoice" />
         </template>
     </Dialog>
 

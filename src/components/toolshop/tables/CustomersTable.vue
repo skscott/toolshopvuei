@@ -15,6 +15,7 @@ onMounted(() => {
     store.fetchCustomers();
 });
 
+// Validation stuff
 const rules = {
     name: [requiredRule, minLengthRule(3)],
     city: [requiredRule, minLengthRule(3)],
@@ -23,8 +24,11 @@ const rules = {
     contact_name: [requiredRule],
     email: [requiredRule, emailRule],
 };
-
 const { errors, validate, validateField, resetValidation } = useValidation(rules);
+// Belt and braces. Disable the save button if there are any errors
+const hasErrors = computed(() => {
+  return Object.values(errors.value).some((error) => error !== '');
+});
 
 const filters = ref({'global': {value: null, matchMode: FilterMatchMode.CONTAINS}});
 const selectedCustomers = ref();
@@ -66,11 +70,6 @@ function findIndexById(id: number) {
     }
     return index;
 };
-
-// Disable the save button if there are any errors
-const hasErrors = computed(() => {
-  return Object.values(errors.value).some((error) => error !== '');
-});
 
 function saveCustomer() {
     if (store.customer.id) {
@@ -202,7 +201,7 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
                     <div class="col-span-12 md:col-span-9">
                         <InputText id="name" v-model="store.customer.city" required="true" rows="3" cols="20" fluid 
                         @blur="validateField('city', store.customer.city)"/>
-                        <InlineMessage v-if="errors.city" severity="error">{{ errors.name }}</InlineMessage>
+                        <InlineMessage v-if="errors.city" severity="error">{{ errors.city }}</InlineMessage>
                     </div>
                     <label for="postal_code" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Postal Code</label>
                     <div class="col-span-12 md:col-span-9">
