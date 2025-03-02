@@ -21,6 +21,8 @@ const dropdownItems = ref(invoice_status); // Initialize dropdown items
 const rules = {
     invoice_number: [requiredRule],
     date_issued: [requiredRule],
+    total_amount: [requiredRule, greaterThanRule(0)],
+    status: [requiredRule],
     due_date: [
     requiredRule,
     sensibleDateRule(
@@ -30,13 +32,12 @@ const rules = {
     ),
   ],
 };
-
 const { errors, validate, validateField, resetValidation} = useValidation(rules);
+
 // Belt and braces. Disable the save button if there are any errors
 const hasErrors = computed(() => {
   return Object.values(errors.value).some((error) => error !== '');
 });
-
 
 onMounted(async () => {
     await store.fetchFilteredInvoices(customerId.value);
@@ -76,6 +77,7 @@ const dialogState = ref({
 function openNew(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
     dialogState.value[type] = true;
     store.invoice = {} as Invoice 
+    resetValidation(); // Reset validation errors
 }
 
 function editInvoice(invoice: Invoice) {
@@ -222,7 +224,7 @@ function getNumberRows() {
                     <label for="invoice_number" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Invoice Nbr</label>
                     <div class="col-span-12 md:col-span-9">
                         <InputText id="invoice_number" v-model="store.invoice.invoice_number" required="true" rows="3" cols="20" fluid
-                        @blur="validateField('name', store.invoice.invoice_number)"/>
+                        @blur="validateField('invoice_number', store.invoice.invoice_number)"/>
                         <InlineMessage v-if="errors.invoice_number" severity="error">{{ errors.invoice_number }}</InlineMessage>
                     </div>
                 </div>
@@ -237,7 +239,9 @@ function getNumberRows() {
                 <div class="grid grid-cols-12 gap-2">
                     <label for="status" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Status</label>
                     <div class="col-span-12 md:col-span-9">
-                        <Select id="state" v-model="selectedInvoice" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full" /> 
+                        <Select id="status" v-model="selectedInvoice" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full"  
+                        @blur="validateField('status', selectedInvoice)"/>
+                        <InlineMessage v-if="errors.status" severity="error">{{ errors.status }}</InlineMessage>
                     </div>
                 </div>                
                 <div class="grid grid-cols-12 gap-2">

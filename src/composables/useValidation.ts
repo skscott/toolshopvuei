@@ -39,6 +39,12 @@ export const sensibleDateRule = (
     };
 };
 
+// Add this to your existing validation rules in useValidation.ts
+export const selectRule = (value: { name: string; value: string } | null) => ({
+    isValid: !!value && value.value !== '', // Ensure a valid option is selected
+    message: 'Please select a valid option.',
+});
+
 // Define the shape of the errors object
 type ValidationErrors = {
     [key: string]: string; // Dynamic keys with string values
@@ -91,5 +97,5 @@ export function useValidation(rules: { [key: string]: Array<(value: string) => {
         errors.value = {}; // Clear all validation errors
     };
 
-    return { errors, validate, validateField, resetValidation, sensibleDateRule };
+    return { errors, validate, validateField, resetValidation, sensibleDateRule, selectRule };
 }

@@ -8,13 +8,25 @@ import Toast from 'primevue';
 import { useInventoryStore } from '@/stores/inventory';
 import { useRouter } from 'vue-router';
 import { Inventory } from '@/types';
+import { useValidation, requiredRule, greaterThanRule, sensibleDateRule, minLengthRule, emailRule } from '@/composables/useValidation';
 
 const router = useRouter();
-
 const store = useInventoryStore();
 
 onMounted(() => {
     store.fetchInventories();
+});
+
+// Validation stuff
+const rules = {
+    name: [requiredRule],
+    description: [requiredRule],
+};
+const { errors, validate, validateField, resetValidation} = useValidation(rules);
+
+// Belt and braces. Disable the save button if there are any errors
+const hasErrors = computed(() => {
+  return Object.values(errors.value).some((error) => error !== '');
 });
 
 const filters = ref({'global': {value: null, matchMode: FilterMatchMode.CONTAINS}});
@@ -34,11 +46,13 @@ const dialogState = ref({
 function openNew(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
     dialogState.value[type] = true;
     store.inventory = {} as Inventory;
+    resetValidation(); // Reset validation errors
 }
 
 function editInventory(inventory) {
     console.log("Customer edit:", inventory);
     store.inventory = {...inventory};
+    resetValidation(); // Reset validation errors
     openDialog('editDialog');
 };
 
@@ -183,11 +197,15 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
                 <div class="grid grid-cols-12 gap-2">
                     <label for="name" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Name</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText id="name" v-model="store.inventory.name" required="true" rows="3" cols="20" fluid />
+                        <InputText id="name" v-model="store.inventory.name" required="true" rows="3" cols="20" fluid 
+                        @blur="validateField('name', store.inventory.name)"/>
+                        <InlineMessage v-if="errors.name" severity="error">{{ errors.name }}</InlineMessage>
                     </div>
                     <label for="description" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Description</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText id="description" v-model="store.inventory.description" required="true" rows="3" cols="20" fluid />
+                        <InputText id="description" v-model="store.inventory.description" required="true" rows="3" cols="20" fluid 
+                        @blur="validateField('description', store.inventory.description)" />
+                        <InlineMessage v-if="errors.description" severity="error">{{ errors.description }}</InlineMessage>
                     </div>
                 </div>
             </div>
@@ -195,7 +213,7 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
         
         <template #footer>
             <Button label="Cancel" icon="pi pi-times" text @click="closeDialog('editDialog')" />
-            <Button label="Save" icon="pi pi-check" @click="saveInventory" />
+            <Button label="Save" icon="pi pi-check" :disabled="hasErrors" @click="saveInventory" />
         </template>
     </Dialog>
 
