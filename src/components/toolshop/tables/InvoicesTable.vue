@@ -73,10 +73,18 @@ const dialogState = ref({
     deletesDialog: false,
 });
 
-function openNew(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
-    dialogState.value[type] = true;
-    store.invoice = {} as Invoice 
-    resetValidation(); // Reset validation errors
+async function openNew(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
+    try{
+        await store.fetchLastInvoice();
+        const newId = (store.last_invoice?.id || 0) + 1; // Default to 0 if last_invoice.id is null/undefined
+        const zeroFilledId = newId.toString().padStart(6, '0');
+        store.invoice = { } as Invoice;
+        store.invoice.invoice_number =  "INV" +  zeroFilledId;
+        resetValidation(); // Reset validation errors
+        dialogState.value[type] = true;
+    } catch (error) {
+        console.error("Error fetching last invoice:", error);
+    }
 }
 
 function editInvoice(invoice: Invoice) {
@@ -222,7 +230,7 @@ function getNumberRows() {
                 <div class="grid grid-cols-12 gap-2">
                     <label for="invoice_number" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Invoice Nbr</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText id="invoice_number" v-model="store.invoice.invoice_number" required="true" rows="3" cols="20" fluid
+                        <InputText id="invoice_number" v-model="store.invoice.invoice_number" disabled required="true" rows="3" cols="20" fluid
                         @blur="validateField('invoice_number', store.invoice.invoice_number)"/>
                         <InlineMessage v-if="errors.invoice_number" severity="error">{{ errors.invoice_number }}</InlineMessage>
                     </div>

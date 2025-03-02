@@ -11,6 +11,7 @@ export const useInvoiceStore = defineStore('invoice', () => {
     // State
     const invoices = ref<Invoice[]>([]);
     const invoice = ref<Invoice | null>(null);
+    const last_invoice = ref<Invoice | null>(null);
     const loading = ref(false);
     const error = ref<string | null>(null);
 
@@ -63,6 +64,19 @@ export const useInvoiceStore = defineStore('invoice', () => {
         }
     }
 
+    async function fetchLastInvoice() {
+        loading.value = true;
+        error.value = null;
+        try {
+            const { data } = await api.get(`${url}last_invoice/`);
+            last_invoice.value = data;
+        } catch (err) {
+            error.value = 'Failed to fetch last invoice';
+        } finally {
+            loading.value = false;
+        }
+    }
+
     // Update invoice
     async function updateInvoice() {
         try {
@@ -84,5 +98,6 @@ export const useInvoiceStore = defineStore('invoice', () => {
     }
 
     // Return state and functions
-    return { invoices, invoice, loading, error, fetchFilteredInvoices, fetchInvoice, updateInvoice, deleteInvoice };
+    return { invoices, invoice, last_invoice, loading, error, fetchFilteredInvoices, fetchInvoice, fetchLastInvoice, updateInvoice, 
+        deleteInvoice };
 });
