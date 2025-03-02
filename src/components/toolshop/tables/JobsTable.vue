@@ -9,6 +9,7 @@ import { useJobStore } from '@/stores/job';
 import { useRouter } from 'vue-router';
 import { Job } from '@/types';
 import { job_status } from '@/lists/job_status';
+import { useValidation, requiredRule, greaterThanRule, sensibleDateRule, minLengthRule, emailRule } from '@/composables/useValidation';
 
 const props = defineProps<{ customerId: number }>();
 const customerId = computed(() => props.customerId);
@@ -28,6 +29,31 @@ const dialogState = ref({
     editDialog: false,
     deleteDialog: false,
     deletesDialog: false,
+});
+
+// Validation stuff
+const rules = {
+    job_title: [requiredRule],
+    description: [requiredRule],
+    cost_estimate: [requiredRule, greaterThanRule(0)],
+    actual_cost: [requiredRule, greaterThanRule(0)],
+    status: [requiredRule],
+    start_date: [requiredRule],
+    end_date: [
+    requiredRule,
+    sensibleDateRule(
+      'date_issued', () => store.job.start_date,
+      'End Date', // Display name for due_date
+      'Startr Date' // Display name for date_issued
+    ),
+  ],
+};
+
+const { errors, validate, validateField, resetValidation} = useValidation(rules);
+
+// Belt and braces. Disable the save button if there are any errors
+const hasErrors = computed(() => {
+  return Object.values(errors.value).some((error) => error !== '');
 });
 
 onMounted(() => {
@@ -51,11 +77,14 @@ watch(selectedJobStatus, (newVal) => {
 function openNew(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
     dialogState.value[type] = true;
     store.job = {} as Job 
+    selectedJobStatus.value = null; // Reset selected status
+    resetValidation(); // Reset validation errors
 }
 
 function editJob(job) {
     console.log("Job edit:", job);
     store.job = {...job};
+    resetValidation(); 
     openDialog('editDialog');
 };
 
@@ -196,31 +225,45 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
                 <div class="grid grid-cols-12 gap-2">
                     <label for="job_title" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Title</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText id="job_title" v-model="store.job.job_title" required="true" rows="3" cols="20" fluid />
+                        <InputText id="job_title" v-model="store.job.job_title" required="true" rows="3" cols="20" fluid 
+                        @blur="validateField('job_title', store.job.job_title)"/>
+                        <InlineMessage v-if="errors.job_title" severity="error">{{ errors.job_title }}</InlineMessage> 
                     </div>
                     <label for="description" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Description</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText id="description" v-model="store.job.description" required="true" rows="3" cols="20" fluid />
+                        <InputText id="description" v-model="store.job.description" required="true" rows="3" cols="20" fluid 
+                        @blur="validateField('description', store.job.description)"/>
+                        <InlineMessage v-if="errors.description" severity="error">{{ errors.description }}</InlineMessage> 
                     </div>
                     <label for="start_date" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Start Date</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText type="date" id="start_date" v-model="store.job.start_date" required="true" rows="3" cols="20" fluid />
+                        <InputText type="date" id="start_date" v-model="store.job.start_date" required="true" rows="3" cols="20" fluid 
+                        @blur="validateField('start_date', store.job.start_date)"/>
+                        <InlineMessage v-if="errors.start_date" severity="error">{{ errors.start_date }}</InlineMessage>
                     </div>
                     <label for="end_date" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">End Date</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText type="date" id="end_date" v-model="store.job.end_date" required="true" rows="3" cols="20" fluid />
+                        <InputText type="date" id="end_date" v-model="store.job.end_date" required="true" rows="3" cols="20" fluid                         
+                        @blur="validateField('end_date', store.job.end_date)"/>
+                        <InlineMessage v-if="errors.end_date" severity="error">{{ errors.end_date }}</InlineMessage>
                     </div>
                     <label for="cost_estimate" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Cost Estimate</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText type="currency" id="end_date" v-model="store.job.cost_estimate" required="true" rows="3" cols="20" fluid />
+                        <InputText type="currency" id="cost_estimate" v-model="store.job.cost_estimate" required="true" rows="3" cols="20" fluid
+                        @blur="validateField('cost_estimate', store.job.cost_estimate)" />
+                        <InlineMessage v-if="errors.cost_estimate" severity="error">{{ errors.cost_estimate }}</InlineMessage>
                     </div>
                     <label for="actual_cost" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Actual Cost</label>
                     <div class="col-span-12 md:col-span-9">
-                        <InputText type="currency" id="end_date" v-model="store.job.actual_cost" required="true" rows="3" cols="20" fluid />
+                        <InputText type="currency" id="actual_cost" v-model="store.job.actual_cost" required="true" rows="3" cols="20" fluid 
+                        @blur="validateField('actual_cost', store.job.actual_cost)" />
+                        <InlineMessage v-if="errors.actual_cost" severity="error">{{ errors.actual_cost }}</InlineMessage>
                     </div>
-                    <label for="name" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Status</label>
+                    <label for="status" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Status</label>
                     <div class="col-span-12 md:col-span-9">
-                        <Select id="state" v-model="selectedJobStatus" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full" /> 
+                        <Select id="state" v-model="selectedJobStatus" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full" 
+                        @blur="validateField('status', selectedJobStatus)"/>
+                        <InlineMessage v-if="errors.status" severity="error">{{ errors.status }}</InlineMessage>
                     </div>   
                 </div>   
             </div>
@@ -228,7 +271,7 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
         
         <template #footer>
             <Button label="Cancel" icon="pi pi-times" text @click="closeDialog('editDialog')" />
-            <Button label="Save" icon="pi pi-check" @click="saveJob" />
+            <Button label="Save" icon="pi pi-check"  :disabled="hasErrors" @click="saveJob" />
         </template>
     </Dialog>
 

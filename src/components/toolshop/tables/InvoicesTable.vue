@@ -13,9 +13,15 @@ import { useValidation, requiredRule, greaterThanRule, sensibleDateRule, minLeng
 const store = useInvoiceStore();
 const props = defineProps<{ customerId: number }>();
 const customerId = computed(() => props.customerId);
-
 const selectedInvoice = ref(null); // Holds selected invoice status object
 const dropdownItems = ref(invoice_status); // Initialize dropdown items
+let toast = useToast();
+
+const filters = ref({'global': {value: null, matchMode: FilterMatchMode.CONTAINS}});
+const selectedInvoices = ref();
+const deleteUIDialog = false;
+const deleteProductsDialog = false;
+const submitted = ref(false);
 
 // Validation stuff
 const rules = {
@@ -60,13 +66,6 @@ watch(selectedInvoice, (newVal) => {
         store.invoice.status = newVal.code; // Update store.invoice.status with the selected code
     }
 });
-const filters = ref({'global': {value: null, matchMode: FilterMatchMode.CONTAINS}});
-const selectedInvoices = ref();
-const deleteUIDialog = false;
-const deleteProductsDialog = false;
-const submitted = ref(false);
-
-let toast = useToast();
 
 const dialogState = ref({
     editDialog: false,
