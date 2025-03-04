@@ -43,6 +43,6 @@ function onAnchorToggle() {
         <div class="layout-menu-container">
             <ToolshopMenu />
         </div>
-        <AppTopbar v-if="isHorizontal" />
+        <ToolshopTopbar v-if="isHorizontal" />
     </div>
 </template>

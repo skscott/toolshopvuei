@@ -77,11 +77,23 @@ export const useInvoiceStore = defineStore('invoice', () => {
         }
     }
 
+        // Update invoice
+    async function createInvoice() {
+        try {
+            console.log(invoice.value);
+            await api.post(url, invoice.value);
+            await fetchFilteredInvoices(invoice.value.customer_id); // Refresh data
+        } catch (err) {
+            error.value = 'Failed to update invoice';
+        }
+    }
+
     // Update invoice
     async function updateInvoice() {
         try {
+            console.log(invoice.value);
             await api.patch(`${url}${invoice.value.id}/`, invoice.value);
-            await fetchFilteredInvoices(); // Refresh data
+            await fetchFilteredInvoices(invoice.value.customer_id); // Refresh data
         } catch (err) {
             error.value = 'Failed to update invoice';
         }
@@ -98,6 +110,6 @@ export const useInvoiceStore = defineStore('invoice', () => {
     }
 
     // Return state and functions
-    return { invoices, invoice, last_invoice, loading, error, fetchFilteredInvoices, fetchInvoice, fetchLastInvoice, updateInvoice, 
-        deleteInvoice };
+    return { invoices, invoice, last_invoice, loading, error, fetchFilteredInvoices, fetchInvoice, fetchLastInvoice, 
+        createInvoice, updateInvoice, deleteInvoice };
 });

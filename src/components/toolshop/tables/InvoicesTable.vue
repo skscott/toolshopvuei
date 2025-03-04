@@ -8,7 +8,7 @@ import Toast from 'primevue';
 import { useInvoiceStore } from '@/stores/invoice';
 import { Invoice } from '@/types';
 import { invoice_status } from '@/lists/invoice_status';
-import { useValidation, requiredRule, greaterThanRule, sensibleDateRule, minLengthRule, emailRule } from '@/composables/useValidation';
+import { useValidation, requiredRule, greaterThanRule, sensibleDateRule, minLengthRule, emailRule, selectRule } from '@/composables/useValidation';
 
 const store = useInvoiceStore();
 const props = defineProps<{ customerId: number }>();
@@ -28,7 +28,7 @@ const rules = {
     invoice_number: [requiredRule],
     date_issued: [requiredRule],
     total_amount: [requiredRule, greaterThanRule(0)],
-    status: [requiredRule],
+    // status: [requiredRule],
     due_date: [
     requiredRule,
     sensibleDateRule(
@@ -78,8 +78,7 @@ async function openNew(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
         await store.fetchLastInvoice();
         const newId = (store.last_invoice?.id || 0) + 1; // Default to 0 if last_invoice.id is null/undefined
         const zeroFilledId = newId.toString().padStart(6, '0');
-        store.invoice = { } as Invoice;
-        store.invoice.invoice_number =  "INV" +  zeroFilledId;
+        store.invoice = { customer_id: customerId.value, invoice_number: "INV" + zeroFilledId} as Invoice;
         resetValidation(); // Reset validation errors
         dialogState.value[type] = true;
     } catch (error) {
@@ -107,18 +106,27 @@ function findIndexById(id: number) {
 
 function saveInvoice() {
     submitted.value = true;
-    if (store.invoice.id) {
-        store.invoices[findIndexById(store.invoice.id)] = store.invoice;
-        toast.add({severity:'success', summary: 'Successful', detail: 'Invoice Updated', life: 3000});
+    try
+    {
+        let message = store.invoice.id ? 'Invoice Updated' : 'Invoice Created';
+        if (store.invoice.id) {
+            store.updateInvoice();
+            store.invoices[findIndexById(store.invoice.id)] = store.invoice;
+        }
+        else {
+            store.createInvoice();
+            store.invoices.push(store.invoice);
+        }
+        toast.add({severity:'success', summary: 'Successful', detail: message, life: 3000});
+        store.invoice = { } as Invoice;
+    } 
+    catch (error) {
+        toast.add({severity:'error', summary: 'Error', detail: error, life: 3000});
+        console.error("Error saving invoice:", error);
     }
-    else {
-        store.invoices.push(store.invoice);
-        toast.add({severity:'success', summary: 'Successful', detail: 'Invoice Created', life: 3000});
+    finally {
+        closeDialog('editDialog');
     }
-    store.updateInvoice();
-    closeDialog('editDialog');
-    store.invoice = { } as Invoice;
-
 };
 
 function deleteInvoice(invoice: any) {
@@ -151,6 +159,10 @@ function openDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
 }
 
 function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
+    if(type === 'editDialog') {
+        store.invoice = { } as Invoice;
+        resetValidation(); // Reset validation errors
+    }
     dialogState.value[type] = false;
 }
 
@@ -246,9 +258,10 @@ function getNumberRows() {
                 <div class="grid grid-cols-12 gap-2">
                     <label for="status" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Status</label>
                     <div class="col-span-12 md:col-span-9">
-                        <Select id="status" v-model="selectedInvoice" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full"  
-                        @blur="validateField('status', selectedInvoice)"/>
-                        <InlineMessage v-if="errors.status" severity="error">{{ errors.status }}</InlineMessage>
+                        <Select id="status" v-model="selectedInvoice" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full" 
+                        />  
+                        <!-- @blur="validateField('status', selectedInvoice)"/>
+                        <InlineMessage v-if="errors.status" severity="error">{{ errors.status }}</InlineMessage> -->
                     </div>
                 </div>                
                 <div class="grid grid-cols-12 gap-2">
