@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Start Django Server",
+        "type": "shell",
+        "command": "python manage.py runserver",
+        "options": {
+          "cwd": "${workspaceFolder}/backend" // Run in the backend directory
+        },
+        "isBackground": true, // Keep the task running in the background
+        "problemMatcher": [] // Prevents VSCode from waiting for task completion
+      },
+      {
+        "label": "Start Vue Server",
+        "type": "npm",
+        "script": "dev",
+        "options": {
+          "cwd": "${workspaceFolder}/frontend" // Run in the frontend directory
+        },
+        "isBackground": true,
+        "problemMatcher": []
+      },
+      {
+        "label": "Start Both Servers",
+        "dependsOrder": "parallel", // Run both tasks in parallel
+        "dependsOn": ["Start Django Server", "Start Vue Server"]
+      }
+    ]
+  }

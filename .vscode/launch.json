@@ -1,14 +1,18 @@
 {
-    "type": "pwa-chrome",
-    "request": "launch",
-    "name": "Launch Chrome",
-    "url": "http://localhost:5173", // Adjust to your actual running URL
-    "webRoot": "${workspaceFolder}/src", // Adjust to match your source files
-    "sourceMapPathOverrides": {
-      "webpack://_N_E/./*": "${webRoot}/*"
-    },
-    "configurations": [
-        
-    
-    ]
-  }
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "pwa-chrome",
+      "request": "launch",
+      "name": "Debug Vue App",
+      "url": "http://localhost:5173", // Adjust to your app's URL
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*"
+      },
+      "preLaunchTask": "npm: dev", // Runs `npm run dev` before debugging
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}
