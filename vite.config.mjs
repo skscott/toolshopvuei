@@ -10,8 +10,14 @@ export default defineConfig({
     build: {
         lib: { 
             sourcemap: true 
-        },
-    },
+        }
+    },  
+    server: {
+        port: 5173,  // Make sure the correct port is used
+        open: true,  // Auto-open browser (optional)
+        strictPort: true,  // Fail fast if port is unavailable
+        host: 'localhost',  // Ensure it's accessible from your machine
+    },  
     optimizeDeps: {
         noDiscovery: true,
         include: ['quill']

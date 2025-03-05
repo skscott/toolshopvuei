@@ -77,11 +77,12 @@ export const useInvoiceStore = defineStore('invoice', () => {
         }
     }
 
-        // Update invoice
+    // Create invoice
     async function createInvoice() {
         try {
             console.log(invoice.value);
-            await api.post(url, invoice.value);
+            const result = await api.post(url, invoice.value);
+            console.log("Post invoice result:", result);
             await fetchFilteredInvoices(invoice.value.customer_id); // Refresh data
         } catch (err) {
             error.value = 'Failed to update invoice';
