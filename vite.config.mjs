@@ -14,7 +14,7 @@ export default defineConfig({
     },  
     server: {
         port: 5173,  // Make sure the correct port is used
-        open: true,  // Auto-open browser (optional)
+        open: false,  // Auto-open browser (optional)
         strictPort: true,  // Fail fast if port is unavailable
         host: 'localhost',  // Ensure it's accessible from your machine
     },  
