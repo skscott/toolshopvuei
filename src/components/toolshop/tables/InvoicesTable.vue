@@ -213,7 +213,11 @@ function getNumberRows() {
             <Column field="id" header="Id"></Column>
             <Column field="invoice_number" header="Invoice Nbr."></Column>
             <Column field="total_amount" header="Total Amount"></Column>
-            <Column field="status" header="Status"></Column>
+            <Column field="status" header="Status">
+                <template #body="slotProps">
+                    {{ invoice_status.find(status => status.value === slotProps.data.status)?.name || slotProps.data.status }}
+                </template>
+            </Column>            
             <Column field="due_date" header="Due Date"></Column>
             <Column header="Actions">
             <template #body="slotProps">
