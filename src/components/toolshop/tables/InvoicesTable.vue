@@ -13,7 +13,7 @@ import { useValidation, requiredRule, greaterThanRule, sensibleDateRule, minLeng
 const store = useInvoiceStore();
 const props = defineProps<{ customerId: number }>();
 const customerId = computed(() => props.customerId);
-const selectedInvoice = ref(null); // Holds selected invoice status object
+const selectedInvoiceStatus = ref('');
 const dropdownItems = ref(invoice_status); // Initialize dropdown items
 let toast = useToast();
 
@@ -28,7 +28,7 @@ const rules = {
     invoice_number: [requiredRule],
     date_issued: [requiredRule],
     total_amount: [requiredRule, greaterThanRule(0)],
-    // status: [requiredRule],
+    status: [requiredRule],
     due_date: [
     requiredRule,
     sensibleDateRule(
@@ -47,25 +47,24 @@ const hasErrors = computed(() => {
 
 onMounted(async () => {
     await store.fetchFilteredInvoices(customerId.value);
-    // Initialize selectedInvoice if store.invoice is populated
+    
+    // Ensure selectedInvoiceStatus is correctly initialized as a string
     if (store.invoice && store.invoice.status) {
-        selectedInvoice.value = dropdownItems.value.find(item => item.code === store.invoice.status);
+        selectedInvoiceStatus.value = store.invoice.status; // Directly assign the string
     }
 });
 
-// Watch for changes in store.invoice and update selectedInvoice
+
 watch(() => store.invoice, (newVal) => {
     if (newVal && newVal.status) {
-        selectedInvoice.value = dropdownItems.value.find(item => item.code === newVal.status);
+        selectedInvoiceStatus.value = newVal.status; // Ensure it's always a string
     }
 }, { immediate: true });
 
-// Watch for changes in selectedInvoice and update store.invoice.status
-watch(selectedInvoice, (newVal) => {
-    if (newVal) {
-        store.invoice.status = newVal.code; // Update store.invoice.status with the selected code
-    }
+watch(selectedInvoiceStatus, (newVal) => {
+    store.invoice.status = newVal; // No longer assigning an object
 });
+
 
 const dialogState = ref({
     editDialog: false,
@@ -255,15 +254,23 @@ function getNumberRows() {
                         <InlineMessage v-if="errors.total_amount" severity="error">{{ errors.total_amount }}</InlineMessage>
                     </div>
                 </div>
+                
                 <div class="grid grid-cols-12 gap-2">
                     <label for="status" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Status</label>
                     <div class="col-span-12 md:col-span-9">
-                        <Select id="status" v-model="selectedInvoice" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full" 
-                        />  
-                        <!-- @blur="validateField('status', selectedInvoice)"/>
-                        <InlineMessage v-if="errors.status" severity="error">{{ errors.status }}</InlineMessage> -->
+                        <Select id="status"
+                            v-model="selectedInvoiceStatus"
+                            :options="dropdownItems"
+                            optionLabel="name"
+                            optionValue="value"
+                            placeholder="Select One"
+                            class="w-full"
+                            @blur="validateField('status', selectedInvoiceStatus)"/>
+                        
+                        <InlineMessage v-if="errors.status" severity="error">{{ errors.status }}</InlineMessage> 
                     </div>
-                </div>                
+                </div>    
+
                 <div class="grid grid-cols-12 gap-2">
                     <label for="date_issued" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Date Issued</label>
                     <div class="col-span-12 md:col-span-9">
