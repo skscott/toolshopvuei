@@ -11,7 +11,8 @@ export default defineConfig({
         lib: { 
             sourcemap: true 
         }
-    },  
+    },
+    logLevel: 'warn', // Suppresses info-level logs like HMR updates  
     server: {
         port: 5173,  // Make sure the correct port is used
         open: false,  // Auto-open browser (optional)

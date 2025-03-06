@@ -80,10 +80,8 @@ export const useInvoiceStore = defineStore('invoice', () => {
     // Create invoice
     async function createInvoice() {
         try {
-            console.log(invoice.value);
             const result = await api.post(url, invoice.value);
-            console.log("Post invoice result:", result);
-            await fetchFilteredInvoices(invoice.value.customer_id); // Refresh data
+            await fetchFilteredInvoices(result.data.customer); // Refresh data
         } catch (err) {
             error.value = 'Failed to update invoice';
         }
@@ -92,9 +90,9 @@ export const useInvoiceStore = defineStore('invoice', () => {
     // Update invoice
     async function updateInvoice() {
         try {
-            console.log(invoice.value);
-            await api.patch(`${url}${invoice.value.id}/`, invoice.value);
-            await fetchFilteredInvoices(invoice.value.customer_id); // Refresh data
+            console.log("Update invoice", invoice.value);
+            const result = await api.patch(`${url}${invoice.value.id}/`, invoice.value);
+            await fetchFilteredInvoices(result.data.customer); // Refresh data
         } catch (err) {
             error.value = 'Failed to update invoice';
         }
@@ -103,8 +101,9 @@ export const useInvoiceStore = defineStore('invoice', () => {
     // Delete invoice
     async function deleteInvoice(invoiceId: number) {
         try {
-            await api.delete(`${url}${invoiceId}/`);
-            await fetchFilteredInvoices(); // Refresh data
+            const customerid = invoice.value?.customer_id;
+            const result = await api.delete(`${url}${invoiceId}/`);
+            await fetchFilteredInvoices(customerid); // Refresh data
         } catch (err) {
             error.value = 'Failed to delete invoice';
         }

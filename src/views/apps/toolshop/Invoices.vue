@@ -3,7 +3,7 @@
     <div class="card">
         <h1>Invoices</h1>
         <p>Welcome to the Invoices page!</p>
-        <InvoicesTable />
+        <InvoicesTable :customerId=0 />
     </div>
 </template>
 

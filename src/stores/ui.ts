@@ -7,7 +7,7 @@ import { RawUIComponent } from '@/types';
 import { transformUIComponent } from '@/utils/transformer';
 
 const baseApiUrl = `${import.meta.env.VITE_API_URL}`;
-const url = `${baseApiUrl}/api/ui-components`;
+const url = `${baseApiUrl}/api/ui-components/`;
 
 interface UIComponent {
     id: number;
@@ -70,15 +70,14 @@ export const useUIStore = defineStore('ui', () => {
     async function updateComponent() {
         const id = component.value.id ?? 0;
         loading.value = true;
-        const headers = get_headers_mock();
         try {
             if (id === 0) {
                 // Create new component
-                await api.post(url, component.value, { headers });
+                await api.post(url, component.value);
                 successMessage.value = 'Component created successfully!';
             } else {
                 // Update existing component
-                await api.put(url + id + "/", component.value, { headers });
+                await api.put(url + id + "/", component.value);
                 // Refresh UI components and visibility data after update
                 await fetchUIComponents();
                 await fetchComponentVisibility();
