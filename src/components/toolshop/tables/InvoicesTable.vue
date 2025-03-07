@@ -13,16 +13,14 @@ import { useValidation, requiredRule, greaterThanRule, sensibleDateRule, minLeng
 const store = useInvoiceStore();
 const props = defineProps<{ customerId: number }>();
 const customerId = computed(() => props.customerId);
-const selectedInvoiceStatus = ref('');
 const dropdownItems = ref(invoice_status); // Initialize dropdown items
 let toast = useToast();
 
 const filters = ref({'global': {value: null, matchMode: FilterMatchMode.CONTAINS}});
 const selectedInvoices = ref();
-const deleteUIDialog = false;
-const deleteProductsDialog = false;
 const submitted = ref(false);
 
+const selectedInvoiceStatus = ref('');
 // Validation stuff
 const rules = {
     invoice_number: [requiredRule],
@@ -54,7 +52,6 @@ onMounted(async () => {
     }
 });
 
-
 watch(() => store.invoice, (newVal) => {
     if (newVal && newVal.status) {
         selectedInvoiceStatus.value = newVal.status; // Ensure it's always a string
@@ -64,7 +61,6 @@ watch(() => store.invoice, (newVal) => {
 watch(selectedInvoiceStatus, (newVal) => {
     store.invoice.status = newVal; // No longer assigning an object
 });
-
 
 const dialogState = ref({
     editDialog: false,

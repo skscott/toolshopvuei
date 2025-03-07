@@ -15,14 +15,11 @@ const props = defineProps<{ customerId: number }>();
 const customerId = computed(() => props.customerId);
 const router = useRouter();
 const store = useJobStore();
-const selectedJobStatus = ref(null); // Holds selected invoice status object
 const dropdownItems = ref(job_status); // Initialize dropdown items
 const filters = ref({'global': {value: null, matchMode: FilterMatchMode.CONTAINS}});
 const selectedJobs = ref();
-const deleteUIDialog = false;
-const deleteProductsDialog = false;
 const submitted = ref(false);
-
+const selectedJobStatus = ref('');
 let toast = useToast();
 
 const dialogState = ref({
@@ -56,22 +53,22 @@ const hasErrors = computed(() => {
   return Object.values(errors.value).some((error) => error !== '');
 });
 
-onMounted(() => {
-    store.fetchJobsByCustomerId(customerId.value);
+onMounted(async () => {
+    store.fetchFilteredJobs(customerId.value);   
+    // Ensure selectedJobStatus is correctly initialized as a string
+    if (store.job && store.job.status) {
+        selectedJobStatus.value = store.job.status; // Directly assign the string
+    }
 });
 
-// Watch for changes in store.invoice and update selectedInvoice
 watch(() => store.job, (newVal) => {
     if (newVal && newVal.status) {
-        selectedJobStatus.value = dropdownItems.value.find(item => item.code === newVal.status);
+        selectedJobStatus.value = newVal.status; // Ensure it's always a string
     }
 }, { immediate: true });
 
-// Watch for changes in selectedInvoice and update store.invoice.status
 watch(selectedJobStatus, (newVal) => {
-    if (newVal) {
-        store.job.status = newVal.code; // Update store.invoice.status with the selected code
-    }
+    store.job.status = newVal; // No longer assigning an object
 });
 
 function openNew(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
@@ -197,7 +194,11 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
             <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
             <Column field="job_title" header="Job Title"></Column>
             <Column field="description" header="Description"></Column>
-            <Column field="status" header="Status"></Column>
+            <Column field="status" header="Status">
+                <template #body="slotProps">
+                    {{ job_status.find(status => status.value === slotProps.data.status)?.name || slotProps.data.status }}
+                </template>
+            </Column>
             <Column field="cost_estimate" header="Cost Estimate"></Column>
             <Column header="Actions">
             <template #body="slotProps">
@@ -260,11 +261,18 @@ function closeDialog(type: 'editDialog' | 'deleteDialog' | 'deletesDialog') {
                         <InlineMessage v-if="errors.actual_cost" severity="error">{{ errors.actual_cost }}</InlineMessage>
                     </div>
                     <label for="status" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Status</label>
+                    
                     <div class="col-span-12 md:col-span-9">
-                        <Select id="state" v-model="selectedJobStatus" :options="dropdownItems" optionLabel="name" placeholder="Select One" class="w-full" 
-                        @blur="validateField('status', selectedJobStatus)"/>
+                        <Select id="state" v-model="selectedJobStatus" 
+                            :options="dropdownItems" 
+                            optionLabel="name" 
+                            optionValue="value"
+                            placeholder="Select One" 
+                            class="w-full" 
+                            @blur="validateField('status', selectedJobStatus)"/>
                         <InlineMessage v-if="errors.status" severity="error">{{ errors.status }}</InlineMessage>
                     </div>   
+                
                 </div>   
             </div>
         </div>

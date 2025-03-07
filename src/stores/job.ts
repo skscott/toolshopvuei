@@ -13,38 +13,73 @@ export const useJobStore = defineStore('job', () => {
     const loading = ref(false);
     const error = ref<string | null>(null);
 
-    // Fetch all jobs
-    async function fetchJobsByCustomerId(customerId: number) {
-        const custjobsurl = `${baseApiUrl}/api/customers/${customerId}/jobs/`;
+    async function fetchFilteredJobs(customerId?: number) {
         loading.value = true;
-        error.value = null;
+        const url = customerId
+            ? `${baseApiUrl}/api/customers/${customerId}/jobs/`
+            : `${baseApiUrl}/api/jobs/`;
+    
         try {
-            const { data } = await api.get(custjobsurl); 
-            if (Array.isArray(data) && data.length > 0 && "jobs" in data[0]) {
-                jobs.value = data[0].jobs;
-            } 
+            await fetchData(url);
+        } finally {
+            loading.value = false;
+        }
+    }
 
-        } catch (err) {
-            error.value = 'Failed to fetch jobs';
-        } finally {
-            loading.value = false;
-        }
-    }
-        
-    // Fetch all jobs
-    async function fetchJobs() {
+    async function fetchData(url: string) {
         loading.value = true;
         error.value = null;
+    
         try {
-            // const headers = get_headers();
-            const { data } = await api.get(url); 
-            jobs.value = data;
+            const { data: jobsData } = await api.get(url);
+    
+            // If the first item is an object with an "invoices" key, extract that
+            if (Array.isArray(jobsData) && jobsData.length > 0 && "jobs" in jobsData[0]) {
+                jobs.value = jobsData[0].jobs;
+            } 
+            // Otherwise, assume it's already a list of invoices
+            else {
+                jobs.value = jobsData;
+            }
         } catch (err) {
-            error.value = 'Failed to fetch jobs';
+            error.value = 'Failed to fjetch invoices';
         } finally {
             loading.value = false;
         }
     }
+
+    // // Fetch all jobs
+    // async function fetchJobsByCustomerId(customerId: number) {
+    //     const custjobsurl = `${baseApiUrl}/api/customers/${customerId}/jobs/`;
+    //     loading.value = true;
+    //     error.value = null;
+    //     try {
+    //         const { data } = await api.get(custjobsurl); 
+    //         if (Array.isArray(data) && data.length > 0 && "jobs" in data[0]) {
+    //             jobs.value = data[0].jobs;
+    //         } 
+
+    //     } catch (err) {
+    //         error.value = 'Failed to fetch jobs';
+    //     } finally {
+    //         loading.value = false;
+    //     }
+    // }
+        
+    // // Fetch all jobs
+    // async function fetchJobs() {
+    //     loading.value = true;
+    //     error.value = null;
+    //     try {
+    //         // const headers = get_headers();
+    //         const { data } = await api.get(url); 
+    //         jobs.value = data;
+    //     } catch (err) {
+    //         error.value = 'Failed to fetch jobs';
+    //     } finally {
+    //         loading.value = false;
+    //     }
+    // }
 
     // Fetch single job
     async function fetchJob(id: number) {
@@ -66,8 +101,8 @@ export const useJobStore = defineStore('job', () => {
     // Update job
     async function updateJob() {
         try {
-            await api.patch(`${url}${job.value.id}/`, job.value);
-            await fetchJobs(); // Refresh data
+            const result = await api.patch(`${url}${job.value.id}/`, job.value);
+            await fetchFilteredJobs(result.data.customer); // Refresh data
         } catch (err) {
             error.value = 'Failed to update job';
         }
@@ -76,12 +111,13 @@ export const useJobStore = defineStore('job', () => {
     // Delete job
     async function deleteJob(jobId: number) {
         try {
+            const customerid =job.value?.customer_id;
             await api.delete(`${url}${jobId}/`);
-            await fetchJobs(); // Refresh data
+            await fetchFilteredJobs(customerid); // Refresh data
         } catch (err) {
             error.value = 'Failed to delete job';
         }
     }
     // Return state and functions
-    return { jobs, job, loading, error, fetchJobs, fetchJob, fetchJobsByCustomerId, updateJob, deleteJob };
+    return { jobs, job, loading, error, fetchFilteredJobs, fetchJob, updateJob, deleteJob };
 });
