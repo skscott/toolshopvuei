@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 // import axios, { AxiosError } from 'axios';
 import api from '@/utils/api';
-import { get_headers, get_headers_mock, handleError } from '@/lib/utils';
 import { ref } from 'vue';
 import { RawUIComponent } from '@/types';
 import { transformUIComponent } from '@/utils/transformer';
@@ -95,8 +94,7 @@ export const useUIStore = defineStore('ui', () => {
     async function deleteComponent(id: number) {
         loading.value = true;
         try {
-            const headers = get_headers_mock();
-            const response = await api.delete(url + id + "/", { headers });
+            const response = await api.delete(url + id + "/");
             tariff.value = response.data;
         } catch (err) {
             error.value = 'Failed to deleteComponent';
