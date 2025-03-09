@@ -252,21 +252,21 @@ export const generateRandomMultiData = (startDate, endDate, intervalHours, minVa
     return data;
 };
 
-export function get_headers() {
-    let token = localStorage.getItem('token');
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Token ' + token,
-    };
-    return headers;
-}
+// export function get_headers() {
+//     let token = localStorage.getItem('token');
+//     const headers = {
+//         'Content-Type': 'application/json',
+//         'Authorization': 'Token ' + token,
+//     };
+//     return headers;
+// }
 
-export function get_headers_mock() {
-    const headers = {
-        'Content-Type': 'application/json',
-    };
-    return headers;
-}
+// export function get_headers_mock() {
+//     const headers = {
+//         'Content-Type': 'application/json',
+//     };
+//     return headers;
+// }
 
 import { AxiosError } from 'axios';
 export function handleError(

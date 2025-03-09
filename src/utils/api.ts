@@ -14,7 +14,8 @@ api.interceptors.request.use(
         const token = localStorage.getItem('token');
 
         if (token) {
-            config.headers.Authorization = 'Token ' + token; // Match your format
+            const isDjangoBackend = import.meta.env.VITE_API_TYPE === 'DRF'; // Add this env var
+            config.headers.Authorization = isDjangoBackend ? `Token ${token}` : `Bearer ${token}`;
         }
 
         return config;

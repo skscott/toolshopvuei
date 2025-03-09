@@ -30,36 +30,13 @@ export const useAuthStore = defineStore('auth', {
     }),
 
     actions: {
-        async login(username: string, password: string) {
-            try {
-                const data = { username, password };
-                const response = await api.post(authUrl, data);
-
-                this.token = response.data.token;
-                this.user = response.data.user;
-
-                console.log('User:', this.user);
-                console.log('Token:', this.token);
-
-                // Store in localStorage properly
-                localStorage.setItem('user', JSON.stringify(this.user));
-                localStorage.setItem('token', this.token);
-
-                // Navigate to returnUrl or home
-                router.push(this.returnUrl || '/');
-            }
-            catch (error) {
-                console.error('Error fetching user data:', error);
-                throw error; // The interceptor already formats the error message
-            }
-        },
-
         async logout() {
             try {
+                const base = "http://127.0.0.1:8080";
+                const baseApiUrl = `${import.meta.env.VITE_API_URL}`;
+                const url = `${base}/api/logout/`;
                 // const headers = get_headers(); // Ensure this function exists
-                const logoutUrl = `${baseApiUrl}/logout/`;
-
-                await api.post(logoutUrl, {});
+                await api.post(url, {});
                 localStorage.removeItem('user');
                 localStorage.removeItem('token');
 

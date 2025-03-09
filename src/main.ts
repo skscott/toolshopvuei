@@ -21,9 +21,6 @@ const pinia = createPinia();
 app.use(pinia);
 app.use(router);
 
-const uiStore = useUIStore();
-uiStore.fetchComponentVisibility(); // Fetch UI settings on startup
-
 const MyPreset = definePreset(Aura, {
     semantic: {
         primary: {
