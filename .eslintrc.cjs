@@ -6,9 +6,17 @@ module.exports = {
     env: {
         node: true
     },
-    extends: ['plugin:vue/vue3-essential', 'eslint:recommended', '@vue/eslint-config-prettier'],
+    extends: [
+        'plugin:vue/vue3-essential',
+        'eslint:recommended',
+        '@vue/eslint-config-prettier',
+        'plugin:@typescript-eslint/recommended' // ← ADD THIS
+    ],
+    parser: 'vue-eslint-parser', // ← For .vue files
     parserOptions: {
-        ecmaVersion: 'latest'
+        parser: '@typescript-eslint/parser', // ← Handles <script lang="ts">
+        ecmaVersion: 'latest',
+        sourceType: 'module'
     },
     ignorePatterns: ['nuxt.config.js', 'index.js'],
     rules: {

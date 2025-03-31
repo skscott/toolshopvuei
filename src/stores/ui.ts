@@ -6,7 +6,7 @@ import { RawUIComponent } from '@/types';
 import { transformUIComponent } from '@/utils/transformer';
 
 const baseApiUrl = `${import.meta.env.VITE_API_URL}`;
-const url = `${baseApiUrl}/api/ui_components/`;
+const url = `${baseApiUrl}/api/ui-components/`;
 
 interface UIComponent {
     id: number;
